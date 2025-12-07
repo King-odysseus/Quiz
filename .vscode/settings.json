@@ -1,3 +1,6 @@
 {
-    "prettier.bracketSameLine": false
+  "prettier.bracketSameLine": false,
+  "github.copilot.enable": {
+    "*": false
+  }
 }
