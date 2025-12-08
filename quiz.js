@@ -15,10 +15,23 @@ const options = document.querySelectorAll(".option");
 // Add click event to each option
 options.forEach((option) => {
   option.addEventListener("click", function () {
-    option.forEach((opt) => {
+    options.forEach((opt) => {
       opt.classList.remove("selected");
     });
-
-    opt.classList.add("selected");
+    this.classList.add("selected");
   });
+});
+
+submitButton.addEventListener("click", function () {
+  console.log("submit button clicked");
+
+  // find what option is clicked by looking for the otion that contains
+  // the classes option and selected
+
+  const selectedOption = document.querySelector(".option.selected");
+
+  if (!selectedOption) {
+    console.log("please click an option");
+    return;
+  }
 });
