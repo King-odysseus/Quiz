@@ -34,4 +34,9 @@ submitButton.addEventListener("click", function () {
     console.log("please click an option");
     return;
   }
+
+  const selectedIndex = selectedOption.getAttribute("data-index");
+  console.log("Selected index", selectedIndex);
+
+  alert(`you selected ${selectedIndex}!`);
 });
