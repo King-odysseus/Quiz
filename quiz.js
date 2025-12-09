@@ -40,3 +40,29 @@ submitButton.addEventListener("click", function () {
 
   alert(`you selected ${selectedIndex}!`);
 });
+
+// Quiz Data
+
+const quizQuestions = [
+  {
+    question: "What is the capital of France?",
+    options: ["London", "Berlin", "Paris", "Madrid"],
+    correctAnswer: 2, // Paris is at index 2
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    options: ["Venus", "Mars", "Jupiter", "Saturn"],
+    correctAnswer: 1, // Mars is at index 1
+  },
+  {
+    question: "What is 2 + 2?",
+    options: ["3", "4", "5", "6"],
+    correctAnswer: 1, // 4 is at index 1
+  },
+];
+
+// Game Data
+let currentQuestionIndex = 0;
+let score = 0;
+
+// Function to load a question
