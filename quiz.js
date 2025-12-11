@@ -9,7 +9,7 @@ const progressBar = document.getElementById("progress-bar");
 const totalQuestionsElement = document.getElementById("total-questions");
 const percentageElement = document.getElementById("percentage");
 const currentQuestionElement = document.getElementById("current-question");
-const questionNumberElement = document.getElementById("q-number");
+const questionNumber = document.getElementById("q-number");
 
 // Question & Options
 const questionTextElement = document.getElementById("question-text");
@@ -118,12 +118,17 @@ optionsContainer.addEventListener("click", (e) => {
   console.log("clicked", e.target);
   // find which option was clicked
   const clickedOption = e.target.closest(".option");
+  //   Guard clause to make sure user clicks an option else nothing runs
   if (!clickedOption) return;
 
-  //   check if its already been selected
+  //  To enable toggle which helps user deselect already selected option
+  // check if its already been selected and disable the next button till they click
   if (clickedOption.classList.contains("selected")) {
     clickedOption.classList.remove("selected");
     nextBtn.disabled = true;
+
+    // After the click run Code to add the selection CSS
+    // but first the guard clause which removes css from the option that isnt selected
   } else {
     const allOptions = document.querySelectorAll(".option");
     allOptions.forEach((opt) => {
@@ -134,3 +139,31 @@ optionsContainer.addEventListener("click", (e) => {
     nextBtn.disabled = false;
   }
 });
+
+// Show the 1st question in the array
+// html needs to be exchanged with the text content
+
+let currentQuestion = 0;
+
+questionTextElement.textContent = quizQuestions[currentQuestion].question;
+
+nextBtn.addEventListener("click", function () {
+  if (currentQuestion < quizQuestions.length) {
+    currentQuestion++;
+    questionTextElement.textContent = quizQuestions[currentQuestion].question;
+  }
+});
+
+// a function that checks the user option selection
+// and make sure it matches the one in the array with the
+//object array
+
+// if the answer is correct increase the answer
+// in the score by +1
+
+// on the click of the next button Question
+//  in the array increases by 1
+// on prev button switches the question with -1
+
+// if it is the last question submit button enabled
+// then a text content that shows the  users score
