@@ -9,7 +9,7 @@ const progressBar = document.getElementById("progress-bar");
 const totalQuestionsElement = document.getElementById("total-questions");
 const percentageElement = document.getElementById("percentage");
 const currentQuestionElement = document.getElementById("current-question");
-const questionNumber = document.getElementById("q-number");
+const questionNumber = document.querySelectorAll(".question-number");
 
 // Question & Options
 const questionTextElement = document.getElementById("question-text");
@@ -143,14 +143,19 @@ optionsContainer.addEventListener("click", (e) => {
 // Show the 1st question in the array
 // html needs to be exchanged with the text content
 
-let currentQuestion = 0;
+let currentQuestionNumber = 0;
 
-questionTextElement.textContent = quizQuestions[currentQuestion].question;
+questionTextElement.textContent = quizQuestions[currentQuestionNumber].question;
+currentQuestionElement.textContent = currentQuestionNumber + 1;
+questionNumber.textContent = currentQuestionElement + 1;
 
 nextBtn.addEventListener("click", function () {
-  if (currentQuestion < quizQuestions.length) {
-    currentQuestion++;
-    questionTextElement.textContent = quizQuestions[currentQuestion].question;
+  if (currentQuestionNumber < quizQuestions.length - 1) {
+    currentQuestionNumber++;
+    questionTextElement.textContent =
+      quizQuestions[currentQuestionNumber].question;
+    currentQuestionElement.textContent = currentQuestionNumber + 1;
+    questionNumber.textContent = `Question ${currentQuestionNumber + 1}`;
   }
 });
 
