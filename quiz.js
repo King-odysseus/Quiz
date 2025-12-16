@@ -137,6 +137,7 @@ optionsContainer.addEventListener("click", (e) => {
 
     clickedOption.classList.add("selected");
     nextBtn.disabled = false;
+    prevBtn.disabled = false;
   }
 });
 
@@ -144,31 +145,31 @@ optionsContainer.addEventListener("click", (e) => {
 // html needs to be exchanged with the text content
 
 let currentQuestionNumber = 0;
+const questionId = document.getElementById("q-number");
 
 questionTextElement.textContent = quizQuestions[currentQuestionNumber].question;
 currentQuestionElement.textContent = currentQuestionNumber + 1;
 questionNumber.textContent = currentQuestionElement + 1;
+questionId.textContent = currentQuestionNumber + 1;
 
 nextBtn.addEventListener("click", function () {
-  if (currentQuestionNumber < quizQuestions.length - 1) {
+  if (currentQuestionNumber < quizQuestions.length + 1) {
     currentQuestionNumber++;
     questionTextElement.textContent =
       quizQuestions[currentQuestionNumber].question;
     currentQuestionElement.textContent = currentQuestionNumber + 1;
-    questionNumber.textContent = `Question ${currentQuestionNumber + 1}`;
+    questionId.textContent = currentQuestionNumber + 1;
   }
 });
 
-// a function that checks the user option selection
-// and make sure it matches the one in the array with the
-//object array
+// Set previous button to take the question to the previous question
 
-// if the answer is correct increase the answer
-// in the score by +1
-
-// on the click of the next button Question
-//  in the array increases by 1
-// on prev button switches the question with -1
-
-// if it is the last question submit button enabled
-// then a text content that shows the  users score
+prevBtn.addEventListener("click", function () {
+  if (currentQuestionNumber > 0) {
+    currentQuestionNumber--;
+    questionTextElement.textContent =
+      quizQuestions[currentQuestionNumber].question;
+    currentQuestionElement.textContent = currentQuestionNumber + 1;
+    questionId.textContent = currentQuestionNumber + 1;
+  }
+});
