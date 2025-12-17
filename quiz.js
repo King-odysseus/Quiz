@@ -1,53 +1,3 @@
-// Select the Elements
-
-// ======================
-// DOM ELEMENT REFERENCES
-// ======================
-// Score & Progress
-const scoreElement = document.getElementById("score");
-const progressBar = document.getElementById("progress-bar");
-const totalQuestionsElement = document.getElementById("total-questions");
-const percentageElement = document.getElementById("percentage");
-const currentQuestionElement = document.getElementById("current-question");
-const questionNumber = document.querySelectorAll(".question-number");
-
-// Question & Options
-const questionTextElement = document.getElementById("question-text");
-const optionsContainer = document.getElementById("options-container");
-const options = document.querySelectorAll(".option");
-const feedbackElement = document.getElementById("feedback");
-
-// Buttons
-const nextBtn = document.getElementById("next-btn");
-const prevBtn = document.getElementById("prev-btn");
-const submitBtn = document.getElementById("submit-btn");
-const restartBtn = document.getElementById("restart-btn");
-const reviewBtn = document.getElementById("review-btn");
-
-// Results
-const resultContainer = document.getElementById("result-container");
-const finalScoreElement = document.getElementById("final-score");
-const resultMessageElement = document.getElementById("result-message");
-
-// LOOP START
-// │
-// ├── 1. SHOW question and options
-// │     (Make the HTML show current question)
-// │
-// ├── 2. WAIT for user to click option
-// │     (Mark it as selected)
-// │
-// ├── 3. WAIT for user to click Submit
-// │     (Check if selected option = correct answer)
-// │
-// ├── 4. SHOW result (correct/incorrect)
-// │     (Update score, give feedback)
-// │
-// ├── 5. WAIT for user to click Next
-// │     (Move to next question)
-// │
-// └── 6. REPEAT until all questions done
-
 // Questions - Object Array
 const quizQuestions = [
   {
@@ -112,10 +62,40 @@ const quizQuestions = [
   },
 ];
 
-// Add event listner to the container to have just one
+// ===========
+// Variables
+// ===========
+
+let currentQuestionNumber = 0;
+
+// ===================
+// Element Selector
+// ===================
+
+const questionId = document.getElementById("q-number");
+let options = document.querySelectorAll(".options");
+const allOptions = document.querySelectorAll(".option");
+const arrayOptions = quizQuestions[currentQuestionNumber].options;
+const optionsContainer = document.getElementById("options-container");
+const questionTextElement = document.getElementById("question-text");
+const currentQuestionElement = document.getElementById("current-question");
+const questionNumber = document.getElementById("q-number");
+const nextBtn = document.getElementById("next-btn");
+const prevBtn = document.getElementById("prev-btn");
+const submitBtn = document.getElementById("submit-btn");
+
+// =======================================================
+questionTextElement.textContent = quizQuestions[currentQuestionNumber].question;
+currentQuestionElement.textContent = currentQuestionNumber + 1;
+questionNumber.textContent = currentQuestionElement + 1;
+questionId.textContent = currentQuestionNumber + 1;
+
+// ========================
+// Option Delection Handler
+// =========================
 
 optionsContainer.addEventListener("click", (e) => {
-  console.log("clicked", e.target);
+  // console.log("clicked", e.target);
   // find which option was clicked
   const clickedOption = e.target.closest(".option");
   //   Guard clause to make sure user clicks an option else nothing runs
@@ -141,16 +121,13 @@ optionsContainer.addEventListener("click", (e) => {
   }
 });
 
-// Show the 1st question in the array
-// html needs to be exchanged with the text content
+// ========================
+// Navigation Handler
+// ========================
 
-let currentQuestionNumber = 0;
-const questionId = document.getElementById("q-number");
-
-questionTextElement.textContent = quizQuestions[currentQuestionNumber].question;
-currentQuestionElement.textContent = currentQuestionNumber + 1;
-questionNumber.textContent = currentQuestionElement + 1;
-questionId.textContent = currentQuestionNumber + 1;
+// =============
+// Next Button
+// ==============
 
 nextBtn.addEventListener("click", function () {
   if (currentQuestionNumber < quizQuestions.length + 1) {
@@ -162,7 +139,9 @@ nextBtn.addEventListener("click", function () {
   }
 });
 
-// Set previous button to take the question to the previous question
+// =============
+// Prev Button
+// ==============
 
 prevBtn.addEventListener("click", function () {
   if (currentQuestionNumber > 0) {
