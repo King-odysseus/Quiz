@@ -73,7 +73,6 @@ let currentQuestionNumber = 0;
 // ===================
 
 const questionId = document.getElementById("q-number");
-let options = document.querySelectorAll(".options");
 const allOptions = document.querySelectorAll(".option");
 const arrayOptions = quizQuestions[currentQuestionNumber].options;
 const optionsContainer = document.getElementById("options-container");
@@ -85,13 +84,16 @@ const prevBtn = document.getElementById("prev-btn");
 const submitBtn = document.getElementById("submit-btn");
 
 // =======================================================
+// Text content Selection
+// ========================================================
+
 questionTextElement.textContent = quizQuestions[currentQuestionNumber].question;
 currentQuestionElement.textContent = currentQuestionNumber + 1;
 questionNumber.textContent = currentQuestionElement + 1;
 questionId.textContent = currentQuestionNumber + 1;
 
 // ========================
-// Option Delection Handler
+// Option Detection Handler
 // =========================
 
 optionsContainer.addEventListener("click", (e) => {
@@ -136,6 +138,8 @@ nextBtn.addEventListener("click", function () {
       quizQuestions[currentQuestionNumber].question;
     currentQuestionElement.textContent = currentQuestionNumber + 1;
     questionId.textContent = currentQuestionNumber + 1;
+
+    updateOption();
   }
 });
 
@@ -150,5 +154,24 @@ prevBtn.addEventListener("click", function () {
       quizQuestions[currentQuestionNumber].question;
     currentQuestionElement.textContent = currentQuestionNumber + 1;
     questionId.textContent = currentQuestionNumber + 1;
+
+    updateOption();
   }
 });
+
+// ========================
+// Update Options Function
+// ========================
+const updateOption = function () {
+  const currentQuestion = quizQuestions[currentQuestionNumber];
+  const allOptions = document.querySelectorAll(".option");
+
+  allOptions.forEach((div, index) => {
+    div.querySelector(".option-text").textContent =
+      currentQuestion.options[index];
+    div.setAttribute("data-index", index);
+    div.className = "option";
+  });
+};
+
+updateOption();
