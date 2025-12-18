@@ -118,11 +118,22 @@ optionsContainer.addEventListener("click", (e) => {
     });
 
     clickedOption.classList.add("selected");
-    nextBtn.disabled = false;
-    prevBtn.disabled = false;
+    nextBtn.disabled = true;
+    prevBtn.disabled = true;
   }
 });
 
+// ==============
+// Check Answer
+// ================
+
+submitBtn.addEventListener("click", (e) => {
+  const clickedOption = e.target.closest("option");
+  if (!clickedOption) return;
+  if ((clickedOption = question[currentQuestionNumber].correctAnswer)) {
+    clickedOption.classList.add("optiion.correct");
+  }
+});
 // ========================
 // Navigation Handler
 // ========================
