@@ -62,19 +62,12 @@ const quizQuestions = [
   },
 ];
 
-// ===========
-// Variables
-// ===========
-
-let currentQuestionNumber = 0;
-
 // ===================
 // Element Selector
 // ===================
 
 const questionId = document.getElementById("q-number");
 const allOptions = document.querySelectorAll(".option");
-const arrayOptions = quizQuestions[currentQuestionNumber].options;
 const optionsContainer = document.getElementById("options-container");
 const questionTextElement = document.getElementById("question-text");
 const currentQuestionElement = document.getElementById("current-question");
@@ -82,6 +75,13 @@ const questionNumber = document.getElementById("q-number");
 const nextBtn = document.getElementById("next-btn");
 const prevBtn = document.getElementById("prev-btn");
 const submitBtn = document.getElementById("submit-btn");
+
+// ===========
+// Variables
+// ===========
+let currentQuestionNumber = 0;
+let selectedOption = null;
+const arrayOptions = quizQuestions[currentQuestionNumber].options;
 
 // =======================================================
 // Text content Selection
@@ -93,21 +93,38 @@ questionNumber.textContent = currentQuestionElement + 1;
 questionId.textContent = currentQuestionNumber + 1;
 
 // ========================
+// Update Options Function
+// ========================
+const updateOption = function () {
+  const currentQuestion = quizQuestions[currentQuestionNumber];
+  const allOptions = document.querySelectorAll(".option");
+
+  allOptions.forEach((div, index) => {
+    div.querySelector(".option-text").textContent =
+      currentQuestion.options[index];
+    div.setAttribute("data-index", index);
+    div.className = "option";
+  });
+};
+
+// ========================
 // Option Detection Handler
 // =========================
 
+let clickedOption = null;
+
 optionsContainer.addEventListener("click", (e) => {
-  // console.log("clicked", e.target);
-  // find which option was clicked
-  const clickedOption = e.target.closest(".option");
+  const clicked = e.target.closest(".option");
+
   //   Guard clause to make sure user clicks an option else nothing runs
-  if (!clickedOption) return;
+  if (!clicked) return;
 
   //  To enable toggle which helps user deselect already selected option
   // check if its already been selected and disable the next button till they click
-  if (clickedOption.classList.contains("selected")) {
-    clickedOption.classList.remove("selected");
+  if (clicked.classList.contains("selected")) {
+    clicked.classList.remove("selected");
     nextBtn.disabled = true;
+    submitBtn.disabled = true;
 
     // After the click run Code to add the selection CSS
     // but first the guard clause which removes css from the option that isnt selected
@@ -117,23 +134,14 @@ optionsContainer.addEventListener("click", (e) => {
       opt.classList.remove("selected");
     });
 
-    clickedOption.classList.add("selected");
-    nextBtn.disabled = true;
-    prevBtn.disabled = true;
+    clicked.classList.add("selected");
+
+    submitBtn.disabled = false;
+
+    clickedOption = clicked;
   }
 });
 
-// ==============
-// Check Answer
-// ================
-
-submitBtn.addEventListener("click", (e) => {
-  const clickedOption = e.target.closest("option");
-  if (!clickedOption) return;
-  if ((clickedOption = question[currentQuestionNumber].correctAnswer)) {
-    clickedOption.classList.add("optiion.correct");
-  }
-});
 // ========================
 // Navigation Handler
 // ========================
@@ -170,19 +178,26 @@ prevBtn.addEventListener("click", function () {
   }
 });
 
-// ========================
-// Update Options Function
-// ========================
-const updateOption = function () {
-  const currentQuestion = quizQuestions[currentQuestionNumber];
-  const allOptions = document.querySelectorAll(".option");
+// ==============
+// Check Correct Answer
+// ==============
+submitBtn.addEventListener("click", () => {
+  if (!clickedOption) {
+    console.log("Please click an option first!");
+    return;
+  }
 
-  allOptions.forEach((div, index) => {
-    div.querySelector(".option-text").textContent =
-      currentQuestion.options[index];
-    div.setAttribute("data-index", index);
-    div.className = "option";
-  });
-};
+  const selectedIndex = clickedOption.getAttribute("data-index");
+  const correctIndex = quizQuestions[currentQuestionNumber].correctAnswer;
 
-updateOption();
+  if (parseInt(selectedIndex) === correctIndex) {
+    console.log("Correct!");
+    clickedOption.classList.contains("option, selected");
+    clickedOption.classList.add("correct");
+  } else {
+    console.log("Wrong!");
+    clickedOption.classList.add("incorrect");
+  }
+  nextBtn.disabled = false;
+  prevBtn.disabled = false;
+});
