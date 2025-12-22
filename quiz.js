@@ -74,6 +74,7 @@ const currentQuestionElement = document.getElementById("current-question");
 const questionNumber = document.getElementById("q-number");
 const nextBtn = document.getElementById("next-btn");
 const prevBtn = document.getElementById("prev-btn");
+const scoreElement = document.getElementById("score");
 const submitBtn = document.getElementById("submit-btn");
 
 // ===========
@@ -178,9 +179,9 @@ prevBtn.addEventListener("click", function () {
   }
 });
 
-// ==============
+// =====================
 // Check Correct Answer
-// ==============
+// =====================
 submitBtn.addEventListener("click", () => {
   if (!clickedOption) {
     console.log("Please click an option first!");
@@ -194,6 +195,9 @@ submitBtn.addEventListener("click", () => {
     console.log("Correct!");
     clickedOption.classList.contains("option, selected");
     clickedOption.classList.add("correct");
+    let score = parseInt(scoreElement.textContent);
+    score++;
+    scoreElement.textContent = score;
   } else {
     console.log("Wrong!");
     clickedOption.classList.add("incorrect");
