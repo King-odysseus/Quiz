@@ -76,7 +76,8 @@ const nextBtn = document.getElementById("next-btn");
 const prevBtn = document.getElementById("prev-btn");
 const scoreElement = document.getElementById("score");
 const submitBtn = document.getElementById("submit-btn");
-
+const result = document.getElementById("result-container");
+const finalScore = document.getElementById("final-score");
 // ===========
 // Variables
 // ===========
@@ -152,7 +153,7 @@ optionsContainer.addEventListener("click", (e) => {
 // ==============
 
 nextBtn.addEventListener("click", function () {
-  if (currentQuestionNumber < quizQuestions.length + 1) {
+  if (currentQuestionNumber < quizQuestions.length - 1) {
     currentQuestionNumber++;
     questionTextElement.textContent =
       quizQuestions[currentQuestionNumber].question;
@@ -179,9 +180,13 @@ prevBtn.addEventListener("click", function () {
   }
 });
 
-// =====================
-// Check Correct Answer
-// =====================
+// ==========================================
+// Check Correct Answer and update score
+// ==========================================
+
+let score = 0;
+scoreElement.textContent = score;
+
 submitBtn.addEventListener("click", () => {
   if (!clickedOption) {
     console.log("Please click an option first!");
@@ -192,16 +197,37 @@ submitBtn.addEventListener("click", () => {
   const correctIndex = quizQuestions[currentQuestionNumber].correctAnswer;
 
   if (parseInt(selectedIndex) === correctIndex) {
-    console.log("Correct!");
-    clickedOption.classList.contains("option, selected");
-    clickedOption.classList.add("correct");
-    let score = parseInt(scoreElement.textContent);
     score++;
     scoreElement.textContent = score;
+    console.log("Correct!");
+    // clickedOption.classList.contains("option, selected");
+    clickedOption.classList.add("correct");
   } else {
     console.log("Wrong!");
     clickedOption.classList.add("incorrect");
   }
-  nextBtn.disabled = false;
+
+  allOptions.forEach((option) => {
+    option.classList.add("disabled");
+  });
   prevBtn.disabled = false;
+  nextBtn.disabled = false;
+
+  if (currentQuestionNumber === quizQuestions.length - 1) {
+    submitBtn.classList.add("disabled");
+    submitBtn.disabled = true;
+    nextBtn.disabled = true;
+    console.log("this is the last questions");
+    result.style.display = "block";
+
+    finalScore.textContent = score + "/10";
+  }
 });
+
+// ============================================
+// Function to reset the Question and options
+// =============================================
+
+const loadQuestions = () => {
+  if ((allOptions.classList.contains = "selected, ")) updateOption();
+};
