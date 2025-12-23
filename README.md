@@ -51,4 +51,4 @@ Works on all modern browsers including:
 
 ## License
 
-MIT License - Feel free to use and modify this project as needed.
+- Feel free to use and modify this project as needed.
