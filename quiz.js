@@ -78,6 +78,8 @@ const scoreElement = document.getElementById("score");
 const submitBtn = document.getElementById("submit-btn");
 const result = document.getElementById("result-container");
 const finalScore = document.getElementById("final-score");
+const quizContainer = document.getElementById("question-container");
+const restartBtn = document.getElementById("restart-btn");
 // ===========
 // Variables
 // ===========
@@ -148,11 +150,7 @@ optionsContainer.addEventListener("click", (e) => {
 // Navigation Handler
 // ========================
 
-// =============
-// Next Button
-// ==============
-
-nextBtn.addEventListener("click", function () {
+const loadNextQuestion = function () {
   if (currentQuestionNumber < quizQuestions.length - 1) {
     currentQuestionNumber++;
     questionTextElement.textContent =
@@ -161,9 +159,24 @@ nextBtn.addEventListener("click", function () {
     questionId.textContent = currentQuestionNumber + 1;
 
     updateOption();
+    submitBtn.disabled = false;
   }
-});
+};
 
+const loadQuiz = () => {
+  currentQuestionNumber = 0;
+  score = 0;
+  questionTextElement.textContent =
+    quizQuestions[currentQuestionNumber].question;
+  questionId.textContent = currentQuestionNumber + 1;
+  updateOption();
+};
+
+// =============
+// Next Button
+// ==============
+
+nextBtn.addEventListener("click", loadNextQuestion);
 // =============
 // Prev Button
 // ==============
@@ -199,6 +212,7 @@ submitBtn.addEventListener("click", () => {
   if (parseInt(selectedIndex) === correctIndex) {
     score++;
     scoreElement.textContent = score;
+
     console.log("Correct!");
     // clickedOption.classList.contains("option, selected");
     clickedOption.classList.add("correct");
@@ -212,6 +226,7 @@ submitBtn.addEventListener("click", () => {
   });
   prevBtn.disabled = false;
   nextBtn.disabled = false;
+  submitBtn.disabled = true;
 
   if (currentQuestionNumber === quizQuestions.length - 1) {
     submitBtn.classList.add("disabled");
@@ -219,6 +234,7 @@ submitBtn.addEventListener("click", () => {
     nextBtn.disabled = true;
     console.log("this is the last questions");
     result.style.display = "block";
+    quizContainer.style.display = "none";
 
     finalScore.textContent = score + "/10";
   }
@@ -228,6 +244,10 @@ submitBtn.addEventListener("click", () => {
 // Function to reset the Question and options
 // =============================================
 
-const loadQuestions = () => {
-  if ((allOptions.classList.contains = "selected, ")) updateOption();
-};
+restartBtn.addEventListener("click", () => {
+  score = 0;
+  currentQuestionNumber = 0;
+  quizContainer.style.display = "block";
+  loadQuiz();
+  result.style.display = "none";
+});
