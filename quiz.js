@@ -80,6 +80,8 @@ const result = document.getElementById("result-container");
 const finalScore = document.getElementById("final-score");
 const quizContainer = document.getElementById("question-container");
 const restartBtn = document.getElementById("restart-btn");
+const feedback = document.getElementById("feedback");
+
 // ===========
 // Variables
 // ===========
@@ -160,6 +162,7 @@ const loadNextQuestion = function () {
 
     updateOption();
     submitBtn.disabled = false;
+    hideFeedback();
   }
 };
 
@@ -172,6 +175,11 @@ const loadQuiz = () => {
   updateOption();
 };
 
+function updateScoreDisplay() {
+  if (scoreElement) {
+    scoreElement.textContent = score;
+  }
+}
 // =============
 // Next Button
 // ==============
@@ -193,6 +201,28 @@ prevBtn.addEventListener("click", function () {
   }
 });
 
+// =======================================
+// FeedBack FUnctions
+// =======================================
+
+function showCorrectFeedback() {
+  feedback.textContent = "✅ Correct! well done";
+  feedback.className = "feedback correct";
+  feedback.style.display = "block";
+}
+
+function showWrongFeedback() {
+  feedback.textContent = "𐄂 Wrong! Move to next Question";
+  feedback.className = "feedback incorrect";
+  feedback.style.display = "block";
+}
+
+function hideFeedback() {
+  feedback.textContent = "";
+  feedback.className = "feedback";
+  feedback.style.display = "none";
+}
+
 // ==========================================
 // Check Correct Answer and update score
 // ==========================================
@@ -212,6 +242,7 @@ submitBtn.addEventListener("click", () => {
   if (parseInt(selectedIndex) === correctIndex) {
     score++;
     scoreElement.textContent = score;
+    showCorrectFeedback();
 
     console.log("Correct!");
     // clickedOption.classList.contains("option, selected");
@@ -219,6 +250,7 @@ submitBtn.addEventListener("click", () => {
   } else {
     console.log("Wrong!");
     clickedOption.classList.add("incorrect");
+    showWrongFeedback();
   }
 
   allOptions.forEach((option) => {
@@ -249,5 +281,7 @@ restartBtn.addEventListener("click", () => {
   currentQuestionNumber = 0;
   quizContainer.style.display = "block";
   loadQuiz();
+  updateScoreDisplay();
   result.style.display = "none";
+  hideFeedback();
 });
