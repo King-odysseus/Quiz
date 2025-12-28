@@ -81,6 +81,8 @@ const finalScore = document.getElementById("final-score");
 const quizContainer = document.getElementById("question-container");
 const restartBtn = document.getElementById("restart-btn");
 const feedback = document.getElementById("feedback");
+const progressBar = document.getElementById("progress-bar");
+const percentage = document.getElementById("percentage");
 
 // ===========
 // Variables
@@ -163,6 +165,7 @@ const loadNextQuestion = function () {
     updateOption();
     submitBtn.disabled = false;
     hideFeedback();
+    updateProgressBar();
   }
 };
 
@@ -173,6 +176,7 @@ const loadQuiz = () => {
     quizQuestions[currentQuestionNumber].question;
   questionId.textContent = currentQuestionNumber + 1;
   updateOption();
+  updateProgressBar();
 };
 
 function updateScoreDisplay() {
@@ -185,19 +189,25 @@ function updateScoreDisplay() {
 // ==============
 
 nextBtn.addEventListener("click", loadNextQuestion);
+
 // =============
 // Prev Button
 // ==============
 
 prevBtn.addEventListener("click", function () {
   if (currentQuestionNumber > 0) {
+    let score = parseInt(scoreElement.textContent);
+    console.log("score");
     currentQuestionNumber--;
     questionTextElement.textContent =
       quizQuestions[currentQuestionNumber].question;
     currentQuestionElement.textContent = currentQuestionNumber + 1;
     questionId.textContent = currentQuestionNumber + 1;
+    scoreElement.textContent = score--;
 
     updateOption();
+    updateProgressBar();
+    console.log("updateProgressBar()");
   }
 });
 
@@ -206,13 +216,13 @@ prevBtn.addEventListener("click", function () {
 // =======================================
 
 function showCorrectFeedback() {
-  feedback.textContent = "✅ Correct! well done";
+  feedback.textContent = "✅ Correct! Well done - Move to next question";
   feedback.className = "feedback correct";
   feedback.style.display = "block";
 }
 
 function showWrongFeedback() {
-  feedback.textContent = "𐄂 Wrong! Move to next Question";
+  feedback.textContent = "𐄂 Wrong! Move to next question";
   feedback.className = "feedback incorrect";
   feedback.style.display = "block";
 }
@@ -272,6 +282,24 @@ submitBtn.addEventListener("click", () => {
   }
 });
 
+// ===========================================
+// Update Progress Bar
+// ===========================================
+let percent = 0;
+function updateProgressBar() {
+  if (!quizQuestions || quizQuestions.length === 0) {
+    progressBar.style.width = "0%";
+    console.log("no question loaded");
+    return;
+  }
+  percent = Math.round(
+    ((currentQuestionNumber + 1) / quizQuestions.length) * 100
+  );
+  progressBar.style.width = percent + "%";
+  console.log(`Progress: ${percent}%`);
+  percentage.textContent = percent;
+}
+
 // ============================================
 // Function to reset the Question and options
 // =============================================
@@ -279,6 +307,8 @@ submitBtn.addEventListener("click", () => {
 restartBtn.addEventListener("click", () => {
   score = 0;
   currentQuestionNumber = 0;
+  currentQuestionElement.textContent = currentQuestionNumber + 1;
+  console.log(currentQuestionElement);
   quizContainer.style.display = "block";
   loadQuiz();
   updateScoreDisplay();
