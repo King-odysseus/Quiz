@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Finance Manager | Wealth Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #7209b7;
+        --success: #4cc9f0;
+        --warning: #f72585;
+        --danger: #f94144;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --border-radius: 10px;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fb;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--light-gray);
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        color: var(--primary);
+      }
+
+      .logo h1 {
+        font-size: 1.8rem;
+        color: var(--dark);
+      }
+
+      .logo span {
+        color: var(--primary);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-avatar {
+        width: 45px;
+        height: 45px;
+        background-color: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      /* Navigation */
+      .nav-tabs {
+        display: flex;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .nav-tab {
+        padding: 18px 30px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        border-bottom: 3px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-tab:hover {
+        background-color: var(--light-gray);
+      }
+
+      .nav-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background-color: rgba(67, 97, 238, 0.05);
+      }
+
+      /* Main Content */
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Dashboard Grid */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 25px;
+        transition: var(--transition);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .card-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .income-icon {
+        background-color: rgba(76, 201, 240, 0.2);
+        color: var(--success);
+      }
+
+      .expense-icon {
+        background-color: rgba(249, 65, 68, 0.2);
+        color: var(--danger);
+      }
+
+      .savings-icon {
+        background-color: rgba(67, 97, 238, 0.2);
+        color: var(--primary);
+      }
+
+      .investment-icon {
+        background-color: rgba(114, 9, 183, 0.2);
+        color: var(--secondary);
+      }
+
+      .metric-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .metric-change {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        gap: 5px;
+      }
+
+      .positive {
+        color: #2ecc71;
+      }
+
+      .negative {
+        color: var(--danger);
+      }
+
+      /* Chart Containers */
+      .chart-container {
+        height: 300px;
+        position: relative;
+      }
+
+      /* Forms */
+      .form-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .form-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 25px;
+      }
+
+      .form-title {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        color: var(--dark);
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .form-input,
+      .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--light-gray);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-input:focus,
+      .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .btn-success {
+        background-color: #2ecc71;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background-color: #27ae60;
+      }
+
+      /* Table/Spreadsheet */
+      .table-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 25px;
+        overflow-x: auto;
+      }
+
+      .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .table-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .data-table th {
+        background-color: var(--light-gray);
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #ddd;
+        position: sticky;
+        top: 0;
+      }
+
+      .data-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .data-table tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+      }
+
+      .category-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .housing {
+        background-color: #ffeaa7;
+        color: #d35400;
+      }
+      .groceries {
+        background-color: #a29bfe;
+        color: white;
+      }
+      .transportation {
+        background-color: #81ecec;
+        color: #00b894;
+      }
+      .healthcare {
+        background-color: #fd79a8;
+        color: white;
+      }
+      .leisure {
+        background-color: #55efc4;
+        color: #00b894;
+      }
+      .education {
+        background-color: #74b9ff;
+        color: white;
+      }
+      .income {
+        background-color: #00b894;
+        color: white;
+      }
+
+      /* Investment Cards */
+      .investment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+      }
+
+      .investment-card {
+        border-left: 5px solid var(--secondary);
+      }
+
+      .investment-type {
+        font-size: 0.9rem;
+        color: var(--gray);
+        margin-bottom: 5px;
+      }
+
+      .investment-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+      }
+
+      .investment-return {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 600;
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background-color: white;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 30px;
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--gray);
+      }
+
+      /* Responsive */
+      @media (max-width: 992px) {
+        .form-section {
+          grid-template-columns: 1fr;
+        }
+
+        .dashboard-grid {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-tabs {
+          flex-wrap: wrap;
+        }
+
+        .nav-tab {
+          flex: 1 0 auto;
+          justify-content: center;
+          padding: 15px;
+        }
+
+        .header {
+          flex-direction: column;
+          gap: 20px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <i class="fas fa-chart-line"></i>
+          <h1>Family<span>Finance</span> Manager</h1>
+        </div>
+        <div class="user-info">
+          <div>Welcome, <strong>Smith Family</strong></div>
+          <div class="user-avatar">JS</div>
+        </div>
+      </header>
+
+      <nav class="nav-tabs">
+        <div class="nav-tab active" data-tab="dashboard">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </div>
+        <div class="nav-tab" data-tab="transactions">
+          <i class="fas fa-receipt"></i> Transactions
+        </div>
+        <div class="nav-tab" data-tab="accounts">
+          <i class="fas fa-piggy-bank"></i> Accounts
+        </div>
+        <div class="nav-tab" data-tab="investments">
+          <i class="fas fa-chart-pie"></i> Investments
+        </div>
+        <div class="nav-tab" data-tab="reports">
+          <i class="fas fa-table"></i> Spreadsheet View
+        </div>
+      </nav>
+
+      <!-- Dashboard Tab -->
+      <section id="dashboard" class="tab-content active">
+        <div class="dashboard-grid">
+          <!-- Net Worth Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Net Worth</h3>
+              <div class="card-icon income-icon">
+                <i class="fas fa-landmark"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="net-worth">$187,450</div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>12.5% from last month</span>
+            </div>
+          </div>
+
+          <!-- Monthly Cash Flow Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Monthly Cash Flow</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-exchange-alt"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="cash-flow">+$2,850</div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>Positive cash flow</span>
+            </div>
+          </div>
+
+          <!-- Total Savings Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Total Savings</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-piggy-bank"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="total-savings">$42,300</div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>8.2% from last month</span>
+            </div>
+          </div>
+
+          <!-- Investment Portfolio Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Investment Portfolio</h3>
+              <div class="card-icon investment-icon">
+                <i class="fas fa-chart-pie"></i>
+              </div>
+            </div>
+            <div class="metric-value" id="investment-value">$98,750</div>
+            <div class="metric-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>5.3% return</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Expense Breakdown Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Expense Breakdown</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="expenseChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Income vs Expense Trend Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Income vs Expense Trend</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="incomeExpenseChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Investment Allocation Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Investment Allocation</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="investmentChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Savings Goals Progress -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Savings Goals Progress</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="savingsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions Tab -->
+      <section id="transactions" class="tab-content">
+        <div class="form-section">
+          <div class="form-card">
+            <h3 class="form-title">Add New Transaction</h3>
+            <form id="transaction-form">
+              <div class="form-group">
+                <label class="form-label">Date</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  id="transaction-date"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="transaction-type" required>
+                  <option value="">Select Type</option>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Amount ($)</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  id="transaction-amount"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="transaction-category" required>
+                  <option value="">Select Category</option>
+                  <option value="housing">Housing</option>
+                  <option value="groceries">Groceries</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="leisure">Leisure</option>
+                  <option value="education">Education</option>
+                  <option value="income">Income</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="transaction-description"
+                  placeholder="Enter description"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Account</label>
+                <select class="form-select" id="transaction-account" required>
+                  <option value="">Select Account</option>
+                  <option value="checking">Checking Account</option>
+                  <option value="savings">Savings Account</option>
+                  <option value="credit">Credit Card</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Transaction
+              </button>
+            </form>
+          </div>
+
+          <div class="form-card">
+            <h3 class="form-title">Recent Transactions</h3>
+            <div id="recent-transactions">
+              <!-- Recent transactions will be dynamically added here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accounts Tab -->
+      <section id="accounts" class="tab-content">
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Checking Account</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-university"></i>
+              </div>
+            </div>
+            <div class="metric-value">$12,450</div>
+            <div class="metric-change">Last updated: Today</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Savings Account</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-piggy-bank"></i>
+              </div>
+            </div>
+            <div class="metric-value">$28,500</div>
+            <div class="metric-change">
+              <span class="positive">+$500 this month</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Emergency Fund</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+            </div>
+            <div class="metric-value">$15,000</div>
+            <div class="metric-change">Goal: $20,000 (75%)</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Education Fund</h3>
+              <div class="card-icon savings-icon">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+            </div>
+            <div class="metric-value">$8,500</div>
+            <div class="metric-change">Goal: $50,000 (17%)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Cumulative Savings</h3>
+            <button class="btn btn-primary" id="add-account-btn">
+              <i class="fas fa-plus"></i> Add New Account
+            </button>
+          </div>
+          <div class="chart-container">
+            <canvas id="savingsBreakdownChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Investments Tab -->
+      <section id="investments" class="tab-content">
+        <div class="card-header">
+          <h3 class="card-title">Investment Portfolio</h3>
+          <button class="btn btn-primary" id="add-investment-btn">
+            <i class="fas fa-plus"></i> Add New Investment
+          </button>
+        </div>
+
+        <div class="investment-grid">
+          <!-- Investment cards will be dynamically added here -->
+        </div>
+      </section>
+
+      <!-- Reports/Spreadsheet Tab -->
+      <section id="reports" class="tab-content">
+        <div class="table-container">
+          <div class="table-header">
+            <h3 class="card-title">All Transactions (Spreadsheet View)</h3>
+            <div class="table-actions">
+              <button class="btn btn-primary" id="export-btn">
+                <i class="fas fa-download"></i> Export to Excel
+              </button>
+              <button class="btn btn-success" id="filter-btn">
+                <i class="fas fa-filter"></i> Filter
+              </button>
+            </div>
+          </div>
+
+          <table class="data-table" id="transactions-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Account</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <!-- Table rows will be dynamically added here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Add Investment Modal -->
+    <div class="modal" id="investment-modal">
+      <div class="modal-content">
+        <span class="close-modal" id="close-investment-modal">&times;</span>
+        <h3 class="form-title">Add New Investment</h3>
+        <form id="investment-form">
+          <div class="form-group">
+            <label class="form-label">Investment Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="investment-name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="investment-type" required>
+              <option value="">Select Type</option>
+              <option value="stock">Stock</option>
+              <option value="mutual-fund">Mutual Fund</option>
+              <option value="etf">ETF</option>
+              <option value="bond">Bond</option>
+              <option value="crypto">Cryptocurrency</option>
+              <option value="real-estate">Real Estate</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Symbol/Ticker</label>
+            <input type="text" class="form-input" id="investment-symbol" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quantity/Units</label>
+            <input
+              type="number"
+              class="form-input"
+              id="investment-quantity"
+              step="0.0001"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Purchase Price ($)</label>
+            <input
+              type="number"
+              class="form-input"
+              id="investment-purchase-price"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Current Price ($)</label>
+            <input
+              type="number"
+              class="form-input"
+              id="investment-current-price"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional Notes</label>
+            <textarea
+              class="form-input"
+              id="investment-notes"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Investment
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div class="modal" id="account-modal">
+      <div class="modal-content">
+        <span class="close-modal" id="close-account-modal">&times;</span>
+        <h3 class="form-title">Add New Account</h3>
+        <form id="account-form">
+          <div class="form-group">
+            <label class="form-label">Account Name</label>
+            <input type="text" class="form-input" id="account-name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Account Type</label>
+            <select class="form-select" id="account-type" required>
+              <option value="">Select Type</option>
+              <option value="checking">Checking Account</option>
+              <option value="savings">Savings Account</option>
+              <option value="investment">Investment Account</option>
+              <option value="credit">Credit Card</option>
+              <option value="cash">Cash</option>
+              <option value="loan">Loan</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Initial Balance ($)</label>
+            <input
+              type="number"
+              class="form-input"
+              id="account-balance"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Currency</label>
+            <select class="form-select" id="account-currency" required>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-input"
+              id="account-description"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Account
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Sample data for the application
+      let transactions = [
+        {
+          id: 1,
+          date: "2023-11-15",
+          description: "Grocery Shopping",
+          category: "groceries",
+          type: "expense",
+          amount: 125.75,
+          account: "checking",
+        },
+        {
+          id: 2,
+          date: "2023-11-14",
+          description: "Monthly Salary",
+          category: "income",
+          type: "income",
+          amount: 4500.0,
+          account: "checking",
+        },
+        {
+          id: 3,
+          date: "2023-11-13",
+          description: "Mortgage Payment",
+          category: "housing",
+          type: "expense",
+          amount: 1850.0,
+          account: "checking",
+        },
+        {
+          id: 4,
+          date: "2023-11-12",
+          description: "Gasoline",
+          category: "transportation",
+          type: "expense",
+          amount: 65.5,
+          account: "credit",
+        },
+        {
+          id: 5,
+          date: "2023-11-10",
+          description: "Dinner with Family",
+          category: "leisure",
+          type: "expense",
+          amount: 89.25,
+          account: "credit",
+        },
+        {
+          id: 6,
+          date: "2023-11-08",
+          description: "Freelance Income",
+          category: "income",
+          type: "income",
+          amount: 1200.0,
+          account: "savings",
+        },
+        {
+          id: 7,
+          date: "2023-11-05",
+          description: "Medical Checkup",
+          category: "healthcare",
+          type: "expense",
+          amount: 150.0,
+          account: "checking",
+        },
+        {
+          id: 8,
+          date: "2023-11-01",
+          description: "Kids School Fees",
+          category: "education",
+          type: "expense",
+          amount: 350.0,
+          account: "checking",
+        },
+      ];
+
+      let investments = [
+        {
+          id: 1,
+          name: "Apple Inc.",
+          type: "stock",
+          symbol: "AAPL",
+          quantity: 25,
+          purchasePrice: 145.5,
+          currentPrice: 189.3,
+          notes: "Tech stock",
+        },
+        {
+          id: 2,
+          name: "Vanguard S&P 500 ETF",
+          type: "etf",
+          symbol: "VOO",
+          quantity: 15,
+          purchasePrice: 350.25,
+          currentPrice: 412.8,
+          notes: "Index fund",
+        },
+        {
+          id: 3,
+          name: "US Treasury Bond",
+          type: "bond",
+          symbol: "UST10Y",
+          quantity: 10000,
+          purchasePrice: 98.5,
+          currentPrice: 99.2,
+          notes: "10 Year Treasury",
+        },
+        {
+          id: 4,
+          name: "Real Estate Property",
+          type: "real-estate",
+          symbol: "",
+          quantity: 1,
+          purchasePrice: 250000,
+          currentPrice: 275000,
+          notes: "Rental property",
+        },
+      ];
+
+      let accounts = [
+        {
+          id: 1,
+          name: "Checking Account",
+          type: "checking",
+          balance: 12450,
+          currency: "USD",
+          description: "Primary checking account",
+        },
+        {
+          id: 2,
+          name: "Savings Account",
+          type: "savings",
+          balance: 28500,
+          currency: "USD",
+          description: "High-yield savings",
+        },
+        {
+          id: 3,
+          name: "Emergency Fund",
+          type: "savings",
+          balance: 15000,
+          currency: "USD",
+          description: "Emergency savings",
+        },
+        {
+          id: 4,
+          name: "Education Fund",
+          type: "savings",
+          balance: 8500,
+          currency: "USD",
+          description: "College savings",
+        },
+      ];
+
+      // Initialize the application
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeCharts();
+        loadTransactions();
+        loadInvestments();
+        setupEventListeners();
+        updateDashboardMetrics();
+      });
+
+      // Initialize all charts
+      function initializeCharts() {
+        // Expense Breakdown Chart
+        const expenseCtx = document
+          .getElementById("expenseChart")
+          .getContext("2d");
+        new Chart(expenseCtx, {
+          type: "doughnut",
+          data: {
+            labels: [
+              "Housing",
+              "Groceries",
+              "Transportation",
+              "Healthcare",
+              "Leisure",
+              "Education",
+            ],
+            datasets: [
+              {
+                data: [1850, 125.75, 65.5, 150, 89.25, 350],
+                backgroundColor: [
+                  "#ffeaa7",
+                  "#a29bfe",
+                  "#81ecec",
+                  "#fd79a8",
+                  "#55efc4",
+                  "#74b9ff",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+
+        // Income vs Expense Trend Chart
+        const incomeExpenseCtx = document
+          .getElementById("incomeExpenseChart")
+          .getContext("2d");
+        new Chart(incomeExpenseCtx, {
+          type: "line",
+          data: {
+            labels: ["Aug", "Sep", "Oct", "Nov"],
+            datasets: [
+              {
+                label: "Income",
+                data: [5200, 5400, 5600, 5700],
+                borderColor: "#4cc9f0",
+                backgroundColor: "rgba(76, 201, 240, 0.1)",
+                fill: true,
+                tension: 0.4,
+              },
+              {
+                label: "Expenses",
+                data: [3200, 3400, 3100, 2850],
+                borderColor: "#f94144",
+                backgroundColor: "rgba(249, 65, 68, 0.1)",
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // Investment Allocation Chart
+        const investmentCtx = document
+          .getElementById("investmentChart")
+          .getContext("2d");
+        new Chart(investmentCtx, {
+          type: "pie",
+          data: {
+            labels: ["Stocks", "ETFs", "Bonds", "Real Estate", "Crypto"],
+            datasets: [
+              {
+                data: [4732.5, 6192, 9920, 275000, 0],
+                backgroundColor: [
+                  "#4361ee",
+                  "#7209b7",
+                  "#4cc9f0",
+                  "#f72585",
+                  "#2ecc71",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+
+        // Savings Goals Progress Chart
+        const savingsCtx = document
+          .getElementById("savingsChart")
+          .getContext("2d");
+        new Chart(savingsCtx, {
+          type: "bar",
+          data: {
+            labels: ["Emergency Fund", "Vacation", "Car Purchase", "Education"],
+            datasets: [
+              {
+                label: "Current",
+                data: [15000, 3500, 8000, 8500],
+                backgroundColor: "#4361ee",
+              },
+              {
+                label: "Goal",
+                data: [20000, 5000, 25000, 50000],
+                backgroundColor: "rgba(67, 97, 238, 0.2)",
+                borderColor: "#4361ee",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // Savings Breakdown Chart
+        const savingsBreakdownCtx = document
+          .getElementById("savingsBreakdownChart")
+          .getContext("2d");
+        new Chart(savingsBreakdownCtx, {
+          type: "bar",
+          data: {
+            labels: ["Checking", "Savings", "Emergency", "Education"],
+            datasets: [
+              {
+                label: "Account Balance",
+                data: [12450, 28500, 15000, 8500],
+                backgroundColor: ["#4361ee", "#7209b7", "#4cc9f0", "#f72585"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      // Load transactions into the UI
+      function loadTransactions() {
+        // Load recent transactions
+        const recentContainer = document.getElementById("recent-transactions");
+        recentContainer.innerHTML = "";
+
+        // Show only last 5 transactions
+        const recentTransactions = transactions.slice(0, 5);
+
+        recentTransactions.forEach((transaction) => {
+          const transactionEl = document.createElement("div");
+          transactionEl.className = "transaction-item";
+          transactionEl.style.cssText = `
+                    padding: 15px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+
+          const amountClass =
+            transaction.type === "income" ? "positive" : "negative";
+          const amountSign = transaction.type === "income" ? "+" : "-";
+
+          transactionEl.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600;">${
+                          transaction.description
+                        }</div>
+                        <div style="font-size: 0.9rem; color: #6c757d;">
+                            ${formatDate(transaction.date)} • 
+                            <span class="category-badge ${
+                              transaction.category
+                            }">${transaction.category}</span>
+                        </div>
+                    </div>
+                    <div style="font-weight: 700; font-size: 1.1rem;" class="${amountClass}">
+                        ${amountSign}$${transaction.amount.toFixed(2)}
+                    </div>
+                `;
+
+          recentContainer.appendChild(transactionEl);
+        });
+
+        // Load transactions table
+        const tableBody = document.getElementById("transactions-table-body");
+        tableBody.innerHTML = "";
+
+        transactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+
+          const amountClass =
+            transaction.type === "income" ? "positive" : "negative";
+          const amountSign = transaction.type === "income" ? "+" : "-";
+
+          row.innerHTML = `
+                    <td>${formatDate(transaction.date)}</td>
+                    <td>${transaction.description}</td>
+                    <td><span class="category-badge ${transaction.category}">${
+            transaction.category
+          }</span></td>
+                    <td>${
+                      transaction.type.charAt(0).toUpperCase() +
+                      transaction.type.slice(1)
+                    }</td>
+                    <td class="${amountClass}">${amountSign}$${transaction.amount.toFixed(
+            2
+          )}</td>
+                    <td>${
+                      transaction.account.charAt(0).toUpperCase() +
+                      transaction.account.slice(1)
+                    }</td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 0.9rem;" onclick="editTransaction(${
+                          transaction.id
+                        })">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn" style="padding: 5px 10px; font-size: 0.9rem; background-color: #f94144; color: white;" onclick="deleteTransaction(${
+                          transaction.id
+                        })">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Load investments into the UI
+      function loadInvestments() {
+        const investmentGrid = document.querySelector(".investment-grid");
+        investmentGrid.innerHTML = "";
+
+        investments.forEach((investment) => {
+          const totalValue = investment.quantity * investment.currentPrice;
+          const totalCost = investment.quantity * investment.purchasePrice;
+          const returnValue = totalValue - totalCost;
+          const returnPercent = ((returnValue / totalCost) * 100).toFixed(2);
+
+          const investmentCard = document.createElement("div");
+          investmentCard.className = "card investment-card";
+
+          investmentCard.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${investment.name}</h3>
+                        <div class="card-icon investment-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="investment-type">${investment.type.toUpperCase()} ${
+            investment.symbol ? `(${investment.symbol})` : ""
+          }</div>
+                    <div class="investment-value">$${totalValue.toLocaleString(
+                      "en-US",
+                      { minimumFractionDigits: 2 }
+                    )}</div>
+                    <div class="investment-return ${
+                      returnValue >= 0 ? "positive" : "negative"
+                    }">
+                        <i class="fas fa-arrow-${
+                          returnValue >= 0 ? "up" : "down"
+                        }"></i>
+                        <span>$${returnValue.toFixed(
+                          2
+                        )} (${returnPercent}%)</span>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 0.9rem; color: #6c757d;">
+                        <div>Quantity: ${investment.quantity}</div>
+                        <div>Avg Price: $${investment.purchasePrice.toFixed(
+                          2
+                        )}</div>
+                        <div>Current Price: $${investment.currentPrice.toFixed(
+                          2
+                        )}</div>
+                    </div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.9rem;">
+                        ${investment.notes}
+                    </div>
+                `;
+
+          investmentGrid.appendChild(investmentCard);
+        });
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+        // Tab navigation
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.addEventListener("click", function () {
+            document
+              .querySelectorAll(".nav-tab")
+              .forEach((t) => t.classList.remove("active"));
+            document
+              .querySelectorAll(".tab-content")
+              .forEach((c) => c.classList.remove("active"));
+
+            this.classList.add("active");
+            const tabId = this.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("active");
+          });
+        });
+
+        // Transaction form submission
+        document
+          .getElementById("transaction-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const newTransaction = {
+              id: transactions.length + 1,
+              date: document.getElementById("transaction-date").value,
+              description: document.getElementById("transaction-description")
+                .value,
+              category: document.getElementById("transaction-category").value,
+              type: document.getElementById("transaction-type").value,
+              amount: parseFloat(
+                document.getElementById("transaction-amount").value
+              ),
+              account: document.getElementById("transaction-account").value,
+            };
+
+            transactions.unshift(newTransaction);
+            loadTransactions();
+            updateDashboardMetrics();
+
+            // Reset form
+            this.reset();
+            document.getElementById("transaction-date").valueAsDate =
+              new Date();
+
+            // Show success message
+            alert("Transaction added successfully!");
+          });
+
+        // Investment form submission
+        document
+          .getElementById("investment-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const newInvestment = {
+              id: investments.length + 1,
+              name: document.getElementById("investment-name").value,
+              type: document.getElementById("investment-type").value,
+              symbol: document.getElementById("investment-symbol").value,
+              quantity: parseFloat(
+                document.getElementById("investment-quantity").value
+              ),
+              purchasePrice: parseFloat(
+                document.getElementById("investment-purchase-price").value
+              ),
+              currentPrice: parseFloat(
+                document.getElementById("investment-current-price").value
+              ),
+              notes: document.getElementById("investment-notes").value,
+            };
+
+            investments.push(newInvestment);
+            loadInvestments();
+            updateDashboardMetrics();
+
+            // Close modal and reset form
+            document
+              .getElementById("investment-modal")
+              .classList.remove("active");
+            this.reset();
+
+            // Show success message
+            alert("Investment added successfully!");
+          });
+
+        // Account form submission
+        document
+          .getElementById("account-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const newAccount = {
+              id: accounts.length + 1,
+              name: document.getElementById("account-name").value,
+              type: document.getElementById("account-type").value,
+              balance: parseFloat(
+                document.getElementById("account-balance").value
+              ),
+              currency: document.getElementById("account-currency").value,
+              description: document.getElementById("account-description").value,
+            };
+
+            accounts.push(newAccount);
+            updateDashboardMetrics();
+
+            // Close modal and reset form
+            document.getElementById("account-modal").classList.remove("active");
+            this.reset();
+
+            // Show success message
+            alert("Account added successfully!");
+          });
+
+        // Open investment modal
+        document
+          .getElementById("add-investment-btn")
+          .addEventListener("click", function () {
+            document.getElementById("investment-modal").classList.add("active");
+          });
+
+        // Close investment modal
+        document
+          .getElementById("close-investment-modal")
+          .addEventListener("click", function () {
+            document
+              .getElementById("investment-modal")
+              .classList.remove("active");
+          });
+
+        // Open account modal
+        document
+          .getElementById("add-account-btn")
+          .addEventListener("click", function () {
+            document.getElementById("account-modal").classList.add("active");
+          });
+
+        // Close account modal
+        document
+          .getElementById("close-account-modal")
+          .addEventListener("click", function () {
+            document.getElementById("account-modal").classList.remove("active");
+          });
+
+        // Export to Excel button
+        document
+          .getElementById("export-btn")
+          .addEventListener("click", function () {
+            exportToCSV();
+          });
+
+        // Set today's date as default for transaction date
+        document.getElementById("transaction-date").valueAsDate = new Date();
+      }
+
+      // Update dashboard metrics
+      function updateDashboardMetrics() {
+        // Calculate total savings from all accounts
+        const totalSavings = accounts.reduce(
+          (sum, account) => sum + account.balance,
+          0
+        );
+        document.getElementById(
+          "total-savings"
+        ).textContent = `$${totalSavings.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+        })}`;
+
+        // Calculate total investment value
+        const totalInvestmentValue = investments.reduce((sum, investment) => {
+          return sum + investment.quantity * investment.currentPrice;
+        }, 0);
+        document.getElementById(
+          "investment-value"
+        ).textContent = `$${totalInvestmentValue.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+        })}`;
+
+        // Calculate net worth (savings + investments)
+        const netWorth = totalSavings + totalInvestmentValue;
+        document.getElementById(
+          "net-worth"
+        ).textContent = `$${netWorth.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+        })}`;
+
+        // Calculate monthly cash flow
+        const currentMonth = new Date().getMonth();
+        const monthlyIncome = transactions
+          .filter(
+            (t) =>
+              t.type === "income" &&
+              new Date(t.date).getMonth() === currentMonth
+          )
+          .reduce((sum, t) => sum + t.amount, 0);
+
+        const monthlyExpenses = transactions
+          .filter(
+            (t) =>
+              t.type === "expense" &&
+              new Date(t.date).getMonth() === currentMonth
+          )
+          .reduce((sum, t) => sum + t.amount, 0);
+
+        const cashFlow = monthlyIncome - monthlyExpenses;
+        document.getElementById("cash-flow").textContent = `${
+          cashFlow >= 0 ? "+" : ""
+        }$${cashFlow.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+      }
+
+      // Export transactions to CSV
+      function exportToCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+
+        // Add headers
+        csvContent += "Date,Description,Category,Type,Amount,Account\n";
+
+        // Add data rows
+        transactions.forEach((transaction) => {
+          const row = [
+            transaction.date,
+            transaction.description,
+            transaction.category,
+            transaction.type,
+            transaction.amount,
+            transaction.account,
+          ].join(",");
+          csvContent += row + "\n";
+        });
+
+        // Create download link
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "family_finance_transactions.csv");
+        document.body.appendChild(link);
+
+        // Trigger download
+        link.click();
+        document.body.removeChild(link);
+
+        alert("Transactions exported to CSV file!");
+      }
+
+      // Helper function to format date
+      function formatDate(dateString) {
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return new Date(dateString).toLocaleDateString("en-US", options);
+      }
+
+      // Function to edit transaction (placeholder)
+      function editTransaction(id) {
+        const transaction = transactions.find((t) => t.id === id);
+        alert(
+          `Editing transaction: ${transaction.description}\n\nThis feature would open an edit form in a real application.`
+        );
+      }
+
+      // Function to delete transaction
+      function deleteTransaction(id) {
+        if (confirm("Are you sure you want to delete this transaction?")) {
+          transactions = transactions.filter((t) => t.id !== id);
+          loadTransactions();
+          updateDashboardMetrics();
+          alert("Transaction deleted successfully!");
+        }
+      }
+
+      // Close modals when clicking outside
+      window.addEventListener("click", function (e) {
+        if (e.target.classList.contains("modal")) {
+          e.target.classList.remove("active");
+        }
+      });
+    </script>
+  </body>
+</html>

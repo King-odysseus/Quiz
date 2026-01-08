@@ -11,7 +11,12 @@
     <div class="quiz-container">
       <!-- Quiz Header -->
       <div class="quiz-header">
-        <h1>📚 Knowledge Quiz</h1>
+        <div class="header-top">
+          <h1>📚 Knowledge Quiz</h1>
+          <div class="high-score" id="high-score">
+            🏆 High Score: <span id="high-score-value">0</span>
+          </div>
+        </div>
         <p class="subtitle">Test your knowledge across various topics!</p>
       </div>
 
@@ -83,6 +88,14 @@
         <span class="trophy">🏆</span>
         <h2 class="result-title">Quiz Completed!</h2>
         <div class="result-score" id="final-score">0/10</div>
+        <!-- New High Score Message -->
+        <div
+          class="high-score-message"
+          id="high-score-message"
+          style="display: none"
+        >
+          🎉 New High Score! 🎉
+        </div>
         <div class="result-message" id="result-message">
           You're a quiz master! Keep learning and challenging yourself.
         </div>
@@ -97,44 +110,5 @@
       </div>
     </div>
     <script src="quiz.js"></script>
-    <!-- Add your JavaScript here -->
-
-    <script>
-      // Your DOM manipulation code will go here!
-      // Practice these concepts:
-
-      // 1. Selecting elements
-      // document.getElementById()
-      // document.querySelector()
-      // document.querySelectorAll()
-
-      // 2. Adding event listeners
-      // element.addEventListener()
-
-      // 3. Manipulating content
-      // element.textContent
-      // element.innerHTML
-
-      // 4. Working with classes
-      // classList.add()
-      // classList.remove()
-      // classList.toggle()
-
-      // 5. Working with attributes
-      // getAttribute()
-      // setAttribute()
-      // dataset
-
-      // 6. Creating elements
-      // document.createElement()
-      // appendChild()
-
-      // 7. Styling
-      // element.style.property
-
-      // 8. Forms and buttons
-      // disabled property
-      // click events
-    </script>
   </body>
 </html>
