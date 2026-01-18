@@ -27,19 +27,57 @@ body {
   padding: 25px;
 }
 
-/* Header */
+/* Header - FIXED for mobile centering */
+.quiz-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
 .quiz-header h1 {
   color: #2d3436;
   font-size: 1.8rem;
-  margin-bottom: 10px;
-  text-align: center;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* Header Top - Proper layout */
+.header-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* High Score with NEPMORPHISM 🏆 */
+.high-score {
+  background: #e0e5ec;
+  color: #2d3436;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow:
+    8px 8px 16px #bebebe,
+    -8px -8px 16px #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.high-score span {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #6c5ce7;
 }
 
 .subtitle {
   color: #636e72;
   font-size: 1rem;
-  text-align: center;
-  margin-bottom: 20px;
+  line-height: 1.4;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* Progress & Score */
@@ -232,28 +270,108 @@ body {
   color: #d63031;
 }
 
-/* High Scores */
+/* High Scores - IMPROVED NEPMORPHISM */
 .high-scores-section {
   background: #e0e5ec;
   padding: 20px;
   border-radius: 15px;
   margin: 20px 0;
   box-shadow:
-    4px 4px 8px #bebebe,
-    -4px -4px 8px #ffffff;
+    8px 8px 16px #bebebe,
+    -8px -8px 16px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.high-scores-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2d3436;
+  text-align: center;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+#high-scores-list {
+  min-height: 100px;
 }
 
 .score-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  margin-bottom: 10px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
   background: #e0e5ec;
-  border-radius: 12px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
   box-shadow:
-    3px 3px 6px #bebebe,
-    -3px -3px 6px #ffffff;
+    6px 6px 12px #bebebe,
+    -6px -6px 12px #ffffff;
+}
+
+.score-item:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    8px 8px 16px #bebebe,
+    -8px -8px 16px #ffffff;
+}
+
+/* Gold, Silver, Bronze effects */
+.score-item:first-child {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, #e0e5ec 0%, #fff9e6 100%);
+}
+
+.score-item:nth-child(2) {
+  border-color: #c0c0c0;
+  background: linear-gradient(135deg, #e0e5ec 0%, #f5f5f5 100%);
+}
+
+.score-item:nth-child(3) {
+  border-color: #cd7f32;
+  background: linear-gradient(135deg, #e0e5ec 0%, #f8e9d9 100%);
+}
+
+.score-rank {
+  font-weight: 700;
+  color: #6c5ce7;
+  min-width: 35px;
+  font-size: 1.1rem;
+}
+
+.score-name {
+  flex-grow: 1;
+  margin: 0 20px;
+  font-weight: 600;
+  color: #2d3436;
+  font-size: 1rem;
+}
+
+.score-value {
+  font-weight: 700;
+  color: #6c5ce7;
+  font-size: 1.1rem;
+  min-width: 60px;
+  text-align: right;
+}
+
+.no-scores-message {
+  text-align: center;
+  padding: 30px 20px;
+  color: #636e72;
+  font-style: italic;
+  font-size: 1rem;
+  background: #e0e5ec;
+  border-radius: 15px;
+  border: 2px dashed #bebebe;
+  box-shadow:
+    inset 4px 4px 8px #bebebe,
+    inset -4px -4px 8px #ffffff;
 }
 
 /* Results */
@@ -270,7 +388,7 @@ body {
   margin: 15px 0;
 }
 
-/* Responsive */
+/* Responsive - FIXED mobile centering */
 @media (max-width: 600px) {
   .quiz-container {
     padding: 20px;
@@ -279,6 +397,29 @@ body {
 
   .quiz-header h1 {
     font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .high-score {
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    justify-content: center;
+  }
+
+  .high-score span {
+    font-size: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0 10px;
   }
 
   .question-text {
@@ -303,11 +444,41 @@ body {
   .btn {
     width: 100%;
   }
+
+  .score-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .score-name {
+    margin: 5px 0;
+    order: 2;
+  }
+
+  .score-rank {
+    order: 1;
+  }
+
+  .score-value {
+    order: 3;
+    text-align: center;
+  }
 }
 
 @media (max-width: 400px) {
   .quiz-container {
     padding: 15px;
+  }
+
+  .quiz-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .high-score {
+    font-size: 0.9rem;
+    padding: 8px 16px;
   }
 
   .option {
