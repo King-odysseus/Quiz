@@ -66,8 +66,8 @@ const quizData = [
   },
 ];
 
-// Use quizData consistently (remove quizQuestions references)
-const quizQuestions = quizData; // Add this line if you want to keep both names
+// previously used quizQuestions to ensure it is always quizdata
+const quizQuestions = quizData;
 
 const quizState = {
   currentQuestionIndex: 0,
@@ -75,6 +75,8 @@ const quizState = {
   score: 0,
   isAnswerSubmitted: false,
   userAnswers: [], //tracks answers
+  answeredQuestions: new Set(), //tracks answered Questions
+  answerScore: new Array(quizData.length).fill(null), //tracks ascores for each question
 };
 
 // ========================================================================
@@ -123,9 +125,9 @@ const feedback = document.getElementById("feedback");
 const progressBar = document.getElementById("progress-bar");
 const percentage = document.getElementById("percentage");
 
-// ===========
-// Variables
-// ===========
+// // ===========
+// // Variables
+// // ===========
 let currentQuestionNumber = 0;
 let selectedOption = null;
 let score = 0; // Move score declaration here
@@ -199,6 +201,7 @@ optionsContainer.addEventListener("click", (e) => {
   if (clicked.classList.contains("selected")) {
     clicked.classList.remove("selected");
     nextBtn.disabled = true;
+    z;
     submitBtn.disabled = true;
     clickedOption = null;
   } else {
@@ -208,7 +211,7 @@ optionsContainer.addEventListener("click", (e) => {
       opt.classList.remove("selected");
     });
 
-    // Add selection to clicked option
+    // Add selection css to clicked option
     clicked.classList.add("selected");
     submitBtn.disabled = false;
     clickedOption = clicked;
@@ -313,6 +316,7 @@ function hideFeedback() {
 // ==========================================
 
 submitBtn.addEventListener("click", () => {
+  //Guard Clause
   if (!clickedOption) {
     console.log("Please click an option first!");
     return;
@@ -376,7 +380,7 @@ function updateProgressBar() {
   }
 
   const percent = Math.round(
-    ((currentQuestionNumber + 1) / quizData.length) * 100
+    ((currentQuestionNumber + 1) / quizData.length) * 100,
   );
   progressBar.style.width = percent + "%";
   percentage.textContent = percent + "%";

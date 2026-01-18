@@ -87,18 +87,58 @@
       <div class="result-container" id="result-container">
         <span class="trophy">🏆</span>
         <h2 class="result-title">Quiz Completed!</h2>
+
+        <!-- Final Score Display -->
         <div class="result-score" id="final-score">0/10</div>
-        <!-- New High Score Message -->
-        <div
-          class="high-score-message"
-          id="high-score-message"
-          style="display: none"
-        >
-          🎉 New High Score! 🎉
+
+        <!-- New High Score Section (Initially Hidden) -->
+        <div id="new-high-score-section" style="display: none">
+          <div class="high-score-message" id="high-score-message">
+            🎉 New High Score! 🎉
+          </div>
+
+          <!-- Player Name Input -->
+          <div class="name-input-container">
+            <label for="player-name">Enter your name to save your score:</label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="player-name"
+                placeholder="Your name (2-20 characters)"
+                maxlength="20"
+              />
+              <button class="btn btn-primary" id="save-score-btn">
+                Save Score
+              </button>
+            </div>
+            <div class="input-hint">
+              Names will be displayed on the leaderboard
+            </div>
+            <div
+              id="name-error"
+              class="error-message"
+              style="display: none"
+            ></div>
+          </div>
         </div>
+
+        <!-- High Scores List -->
+        <div class="high-scores-section">
+          <h3>🏆 Leaderboard</h3>
+          <div id="high-scores-list">
+            <!-- High scores will be dynamically inserted here -->
+            <div class="no-scores-message">
+              No high scores yet. Be the first!
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Message -->
         <div class="result-message" id="result-message">
           You're a quiz master! Keep learning and challenging yourself.
         </div>
+
+        <!-- Buttons -->
         <div class="buttons-container">
           <button class="btn btn-secondary" id="restart-btn">
             ↻ Restart Quiz

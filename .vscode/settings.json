@@ -4,3 +4,12 @@
     "*": false
   }
 }
+{
+  "editor.contextMenu": {
+    "when": "editorHasSelection",
+    "items": [
+      "highlight.commands.decorateSelection",
+      "highlight.commands.removeDecoration"
+    ]
+  }
+}
