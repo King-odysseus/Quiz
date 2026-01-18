@@ -174,17 +174,29 @@ function initializeQuiz() {
 // ========================
 // Update Options Function
 // ========================
-const updateOption = function () {
-  const currentQuestion = quizData[currentQuestionNumber];
+function displayQuestion(index) {
+  const question = quizData[index];
+
+  // update question number and textContent
+  questionId.textContent = index + 1;
+  currentQuestionElement.textContent = index + 1;
+  questionNumber.textContent = index + 1;
+  questionTextElement.textContent = question.question;
+
+  //update options
   const allOptions = document.querySelectorAll(".option");
 
-  allOptions.forEach((div, index) => {
-    div.querySelector(".option-text").textContent =
-      currentQuestion.options[index];
-    div.setAttribute("data-index", index);
-    div.className = "option"; // Reset classes
+  allOptions.forEach((div, i) => {
+    div.querySelector(".option-text").textContent = question.options[i];
+    div.setAttribute("data-index", i);
+    div.className = "option";
+
+    if (quizState.answeredQuestions.has(index)) {
+      const userAnswers = quizState.userAnswers[index];
+      const correctIndex = question.correctAnswer;
+    }
   });
-};
+}
 
 // ========================
 // Option Detection Handler
@@ -195,15 +207,21 @@ optionsContainer.addEventListener("click", (e) => {
 
   // Guard clause to make sure user clicks an option else nothing runs
   if (!clicked) return;
+  //check to prevent changing answer if already scored
+  if (quizState.answeredQuestions.has(currentQuestionNumber)) {
+    console.log("Can't change answer - already scored!");
+    return;
+  }
 
   // To enable toggle which helps user deselect already selected option
   // check if its already been selected and disable the next button till they click
   if (clicked.classList.contains("selected")) {
     clicked.classList.remove("selected");
     nextBtn.disabled = true;
-    z;
+
     submitBtn.disabled = true;
     clickedOption = null;
+    quizState.userAnswers[currentQuestionNumber] = null;
   } else {
     // Remove selection from all options
     const allOptions = document.querySelectorAll(".option");
@@ -216,6 +234,11 @@ optionsContainer.addEventListener("click", (e) => {
     submitBtn.disabled = false;
     clickedOption = clicked;
 
+    //save user answers
+    quizState.userAnswers[currentQuestionNumber] = parseInt(
+      clicked.getAttribute("data-index"),
+    );
+
     // Enable prev button if not on first question
     if (currentQuestionNumber > 0) {
       prevBtn.disabled = false;
@@ -224,6 +247,7 @@ optionsContainer.addEventListener("click", (e) => {
 });
 
 // ========================
+
 // Navigation Handler
 // ========================
 
