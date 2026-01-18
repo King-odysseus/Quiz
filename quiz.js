@@ -194,8 +194,26 @@ function displayQuestion(index) {
     if (quizState.answeredQuestions.has(index)) {
       const userAnswers = quizState.userAnswers[index];
       const correctIndex = question.correctAnswer;
+
+      //highlight the correct answer
+      if (i === correctIndex) div.classList.add("correct");
     }
+
+    // highlight if user Answer was wrong
+    if (userAnswers === i && i !== correctIndex) {
+      div.classList.add("incorrect");
+    }
+
+    // Show user's selection
+    if (userAnswer === i) {
+      div.classList.add("selected");
+    }
+
+    // Disable all options
+    div.classList.add("disabled");
   });
+
+  updateProgressBar();
 }
 
 // ========================
