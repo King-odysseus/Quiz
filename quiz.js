@@ -66,17 +66,14 @@ const quizData = [
   },
 ];
 
-// previously used quizQuestions to ensure it is always quizdata
-const quizQuestions = quizData;
-
 const quizState = {
   currentQuestionIndex: 0,
   selectedOptionIndex: null,
   score: 0,
   isAnswerSubmitted: false,
-  userAnswers: [], //tracks answers
-  answeredQuestions: new Set(), //tracks answered Questions
-  answerScore: new Array(quizData.length).fill(null), //tracks ascores for each question
+  userAnswers: new Array(quizData.length).fill(null), // Initialize with null values
+  answeredQuestions: new Set(), // tracks answered Questions
+  answerScore: new Array(quizData.length).fill(null), // tracks scores for each question
 };
 
 // ========================================================================
@@ -94,12 +91,12 @@ const highScoreManager = {
 
   // function that saves new highscore if it is higher than current highscore
   saveHighScore: function (newScore) {
-    const currentHighScore = this.getHighScore(); // Fixed typo: "curentHighScore" to "currentHighScore"
+    const currentHighScore = this.getHighScore();
     if (newScore > currentHighScore) {
       localStorage.setItem(this.storageKey, newScore.toString());
       return true; // New high score was set
     }
-    return false; //no new highscore
+    return false; // no new highscore
   },
 };
 
@@ -108,7 +105,6 @@ const highScoreManager = {
 // ===================
 
 const questionId = document.getElementById("q-number");
-const allOptions = document.querySelectorAll(".option");
 const optionsContainer = document.getElementById("options-container");
 const questionTextElement = document.getElementById("question-text");
 const currentQuestionElement = document.getElementById("current-question");
@@ -125,13 +121,12 @@ const feedback = document.getElementById("feedback");
 const progressBar = document.getElementById("progress-bar");
 const percentage = document.getElementById("percentage");
 
-// // ===========
-// // Variables
-// // ===========
+// ===========
+// Variables
+// ===========
 let currentQuestionNumber = 0;
-let selectedOption = null;
-let score = 0; // Move score declaration here
-let clickedOption = null; // Moved clickedOption declaration here
+let score = 0;
+let clickedOption = null;
 
 // =======================================================
 // Initialize Quiz
@@ -141,17 +136,21 @@ function initializeQuiz() {
   currentQuestionNumber = 0;
   score = 0;
 
-  // Update display
-  questionTextElement.textContent = quizData[currentQuestionNumber].question;
-  currentQuestionElement.textContent = currentQuestionNumber + 1;
-  questionNumber.textContent = currentQuestionNumber + 1;
-  questionId.textContent = currentQuestionNumber + 1;
+  // Reset state
+  quizState.currentQuestionIndex = 0;
+  quizState.score = 0;
+  quizState.selectedOptionIndex = null;
+  quizState.isAnswerSubmitted = false;
+  quizState.userAnswers.fill(null);
+  quizState.answeredQuestions.clear();
+  quizState.answerScore.fill(null);
+  clickedOption = null;
 
-  // Update options
-  updateOption();
+  // Use displayQuestion instead of manual updates
+  displayQuestion(currentQuestionNumber);
 
   // Update score display
-  updateScoreDisplay();
+  scoreElement.textContent = score;
 
   // Update progress bar
   updateProgressBar();
@@ -164,16 +163,15 @@ function initializeQuiz() {
   // Hide feedback
   hideFeedback();
 
-  // Clear selected option
-  const allOptions = document.querySelectorAll(".option");
-  allOptions.forEach((opt) => {
-    opt.classList.remove("selected", "correct", "incorrect", "disabled");
-  });
+  // Show quiz, hide results
+  quizContainer.style.display = "block";
+  result.style.display = "none";
 }
 
-// ========================
-// Update Options Function
-// ========================
+// ==========================================
+// Display and Update Options Function - FIXED
+// ===========================================
+
 function displayQuestion(index) {
   const question = quizData[index];
 
@@ -183,7 +181,7 @@ function displayQuestion(index) {
   questionNumber.textContent = index + 1;
   questionTextElement.textContent = question.question;
 
-  //update options
+  // update options
   const allOptions = document.querySelectorAll(".option");
 
   allOptions.forEach((div, i) => {
@@ -191,26 +189,29 @@ function displayQuestion(index) {
     div.setAttribute("data-index", i);
     div.className = "option";
 
+    // Check if this question has been answered
     if (quizState.answeredQuestions.has(index)) {
-      const userAnswers = quizState.userAnswers[index];
+      const userAnswer = quizState.userAnswers[index];
       const correctIndex = question.correctAnswer;
 
-      //highlight the correct answer
-      if (i === correctIndex) div.classList.add("correct");
-    }
+      // highlight the correct answer
+      if (i === correctIndex) {
+        div.classList.add("correct");
+      }
 
-    // highlight if user Answer was wrong
-    if (userAnswers === i && i !== correctIndex) {
-      div.classList.add("incorrect");
-    }
+      // highlight if user Answer was wrong
+      if (userAnswer === i && userAnswer !== correctIndex) {
+        div.classList.add("incorrect");
+      }
 
-    // Show user's selection
-    if (userAnswer === i) {
-      div.classList.add("selected");
-    }
+      // Show user's selection
+      if (userAnswer === i) {
+        div.classList.add("selected");
+      }
 
-    // Disable all options
-    div.classList.add("disabled");
+      // Disable all options for answered questions
+      div.classList.add("disabled");
+    }
   });
 
   updateProgressBar();
@@ -225,7 +226,8 @@ optionsContainer.addEventListener("click", (e) => {
 
   // Guard clause to make sure user clicks an option else nothing runs
   if (!clicked) return;
-  //check to prevent changing answer if already scored
+
+  // check to prevent changing answer if already scored
   if (quizState.answeredQuestions.has(currentQuestionNumber)) {
     console.log("Can't change answer - already scored!");
     return;
@@ -236,7 +238,6 @@ optionsContainer.addEventListener("click", (e) => {
   if (clicked.classList.contains("selected")) {
     clicked.classList.remove("selected");
     nextBtn.disabled = true;
-
     submitBtn.disabled = true;
     clickedOption = null;
     quizState.userAnswers[currentQuestionNumber] = null;
@@ -252,7 +253,7 @@ optionsContainer.addEventListener("click", (e) => {
     submitBtn.disabled = false;
     clickedOption = clicked;
 
-    //save user answers
+    // save user answers
     quizState.userAnswers[currentQuestionNumber] = parseInt(
       clicked.getAttribute("data-index"),
     );
@@ -265,26 +266,27 @@ optionsContainer.addEventListener("click", (e) => {
 });
 
 // ========================
-
-// Navigation Handler
+// Navigation Handler - FIXED
 // ========================
 
 const loadNextQuestion = function () {
   if (currentQuestionNumber < quizData.length - 1) {
     currentQuestionNumber++;
-    questionTextElement.textContent = quizData[currentQuestionNumber].question;
-    currentQuestionElement.textContent = currentQuestionNumber + 1;
-    questionId.textContent = currentQuestionNumber + 1;
+    quizState.currentQuestionIndex = currentQuestionNumber;
 
-    updateOption();
-    submitBtn.disabled = false;
+    // Use displayQuestion instead of manual updates
+    displayQuestion(currentQuestionNumber);
+
+    submitBtn.disabled = true; // Reset until new selection
     nextBtn.disabled = true; // Disable until new option is selected
     prevBtn.disabled = false;
     hideFeedback();
     updateProgressBar();
 
-    // Clear selected option
-    clickedOption = null;
+    // Clear selected option if not already answered
+    if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
+      clickedOption = null;
+    }
   }
 
   // Disable next button on last question
@@ -300,29 +302,27 @@ const loadNextQuestion = function () {
 nextBtn.addEventListener("click", loadNextQuestion);
 
 // =============
-// Prev Button
+// Prev Button - FIXED
 // ==============
 
 prevBtn.addEventListener("click", function () {
   if (currentQuestionNumber > 0) {
     currentQuestionNumber--;
-    questionTextElement.textContent = quizData[currentQuestionNumber].question;
-    currentQuestionElement.textContent = currentQuestionNumber + 1;
-    questionId.textContent = currentQuestionNumber + 1;
+    quizState.currentQuestionIndex = currentQuestionNumber;
 
-    updateOption();
-    submitBtn.disabled = false;
-    nextBtn.disabled = true;
+    // Use displayQuestion instead of manual updates
+    displayQuestion(currentQuestionNumber);
+
+    submitBtn.disabled = true;
+    nextBtn.disabled = false; // Enable next button when going back
 
     // Update progress bar
     updateProgressBar();
 
-    // Clear selected option
-    clickedOption = null;
-    const allOptions = document.querySelectorAll(".option");
-    allOptions.forEach((opt) => {
-      opt.classList.remove("selected", "correct", "incorrect", "disabled");
-    });
+    // Don't clear if already answered
+    if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
+      clickedOption = null;
+    }
 
     // Disable prev button on first question
     if (currentQuestionNumber === 0) {
@@ -354,11 +354,11 @@ function hideFeedback() {
 }
 
 // ==========================================
-// Check Correct Answer and update score
+// Check Correct Answer and update score - FIXED
 // ==========================================
 
 submitBtn.addEventListener("click", () => {
-  //Guard Clause
+  // Guard Clause
   if (!clickedOption) {
     console.log("Please click an option first!");
     return;
@@ -366,10 +366,28 @@ submitBtn.addEventListener("click", () => {
 
   const selectedIndex = clickedOption.getAttribute("data-index");
   const correctIndex = quizData[currentQuestionNumber].correctAnswer;
+  const isCorrect = parseInt(selectedIndex) === correctIndex;
 
-  if (parseInt(selectedIndex) === correctIndex) {
-    score++;
-    scoreElement.textContent = score;
+  // Check to see if it already has been scored
+  if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
+    if (isCorrect) {
+      score++;
+      quizState.score = score;
+      scoreElement.textContent = score;
+      quizState.answerScore[currentQuestionNumber] = 1; // correct answer
+    } else {
+      quizState.answerScore[currentQuestionNumber] = 0; // incorrect
+    }
+
+    // mark question as answered
+    quizState.answeredQuestions.add(currentQuestionNumber);
+  } else {
+    console.log("already answered this question!");
+    return; // Don't proceed if already answered
+  }
+
+  // show feedback
+  if (isCorrect) {
     showCorrectFeedback();
     clickedOption.classList.add("correct");
   } else {
@@ -401,14 +419,17 @@ submitBtn.addEventListener("click", () => {
 
   // Check if this is the last question
   if (currentQuestionNumber === quizData.length - 1) {
-    result.style.display = "block";
-    quizContainer.style.display = "none";
-    finalScore.textContent = `${score}/${quizData.length}`;
+    // Show results after a short delay
+    setTimeout(() => {
+      result.style.display = "block";
+      quizContainer.style.display = "none";
+      finalScore.textContent = `${score}/${quizData.length}`;
 
-    // Check and save high score
-    if (highScoreManager.saveHighScore(score)) {
-      finalScore.innerHTML += `<br><span class="high-score">New High Score!</span>`;
-    }
+      // Check and save high score
+      if (highScoreManager.saveHighScore(score)) {
+        finalScore.innerHTML += `<br><span class="high-score">New High Score!</span>`;
+      }
+    }, 1000);
   }
 });
 
@@ -428,23 +449,12 @@ function updateProgressBar() {
   percentage.textContent = percent + "%";
 }
 
-// +========================
-// Update Score Function
-// =========================
-function updateScoreDisplay() {
-  if (scoreElement) {
-    scoreElement.textContent = score;
-  }
-}
-
 // ============================================
 // Function to reset the Question and options
 // =============================================
 
 restartBtn.addEventListener("click", () => {
   initializeQuiz();
-  quizContainer.style.display = "block";
-  result.style.display = "none";
 });
 
 // ============================================
