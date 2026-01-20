@@ -225,7 +225,7 @@ function displayQuestion(index) {
       div.classList.add("disabled");
     }
   });
-
+  updateButtonStates();
   updateProgressBar();
 }
 
@@ -246,8 +246,6 @@ optionsContainer.addEventListener("click", (e) => {
   // Toggle selection
   if (clicked.classList.contains("selected")) {
     clicked.classList.remove("selected");
-    nextButton.disabled = true;
-    submitButton.disabled = true;
     quizState.selectedOptionIndex = null;
     quizState.userAnswers[quizState.currentQuestionIndex] = null;
   } else {
@@ -259,55 +257,54 @@ optionsContainer.addEventListener("click", (e) => {
 
     // Add selection to clicked option
     clicked.classList.add("selected");
-    submitButton.disabled = false;
 
     // Save user answer
     const selectedIndex = parseInt(clicked.getAttribute("data-index"));
     quizState.selectedOptionIndex = selectedIndex;
     quizState.userAnswers[quizState.currentQuestionIndex] = selectedIndex;
-
-    // Enable prev button if not on first question
-    if (quizState.currentQuestionIndex > 0) {
-      prevButton.disabled = false;
-    }
   }
+
+  // Update button states after selection
+  updateButtonStates();
 });
 
 // ========================
 // Navigation Functions
 // ========================
 function goToNextQuestion() {
-  if (quizState.currentQuestionIndex < quizData.length - 1) {
-    quizState.currentQuestionIndex++;
-    displayQuestion(quizState.currentQuestionIndex);
+  const currentIndex = quizState.currentQuestionIndex;
+  const isCurrentAnswered = quizState.answeredQuestions.has(currentIndex);
 
-    submitButton.disabled = true;
-    nextButton.disabled = true;
-    prevButton.disabled = false;
+  // Only allow navigation if current question is answered
+  if (currentIndex < quizData.length - 1 && isCurrentAnswered) {
+    quizState.currentQuestionIndex++;
+
+    // Clear selection if navigating to an unanswered question
+    if (!quizState.answeredQuestions.has(quizState.currentQuestionIndex)) {
+      quizState.selectedOptionIndex = null;
+    }
+
+    displayQuestion(quizState.currentQuestionIndex);
     hideFeedback();
     updateProgressBar();
-  }
-
-  // Disable next button on last question
-  if (quizState.currentQuestionIndex === quizData.length - 1) {
-    nextButton.disabled = true;
   }
 }
 
 function goToPreviousQuestion() {
-  if (quizState.currentQuestionIndex > 0) {
-    quizState.currentQuestionIndex--;
-    displayQuestion(quizState.currentQuestionIndex);
+  const currentIndex = quizState.currentQuestionIndex;
 
-    submitButton.disabled = true;
-    nextButton.disabled = false;
+  // Only allow going back if we're not on the first question
+  if (currentIndex > 0) {
+    quizState.currentQuestionIndex--;
+
+    // Clear selection if navigating to an unanswered question
+    if (!quizState.answeredQuestions.has(quizState.currentQuestionIndex)) {
+      quizState.selectedOptionIndex = null;
+    }
+
+    displayQuestion(quizState.currentQuestionIndex);
     hideFeedback();
     updateProgressBar();
-
-    // Disable prev button on first question
-    if (quizState.currentQuestionIndex === 0) {
-      prevButton.disabled = true;
-    }
   }
 }
 
@@ -321,13 +318,15 @@ prevButton.addEventListener("click", goToPreviousQuestion);
 // Feedback Functions
 // =======================================
 function showCorrectFeedback() {
-  feedbackElement.textContent = "✅ Correct! Well done - Move to next question";
+  feedbackElement.textContent =
+    "✅ Correct! You can now move to the next question";
   feedbackElement.className = "feedback correct";
   feedbackElement.style.display = "block";
 }
 
 function showWrongFeedback() {
-  feedbackElement.textContent = "❌ Wrong! Move to next question";
+  feedbackElement.textContent =
+    "❌ Wrong! You can now move to the next question";
   feedbackElement.className = "feedback incorrect";
   feedbackElement.style.display = "block";
 }
@@ -363,15 +362,23 @@ function updateButtonStates() {
   const currentIndex = quizState.currentQuestionIndex;
   const isAnswered = quizState.answeredQuestions.has(currentIndex);
   const hasSelection = quizState.selectedOptionIndex !== null;
+  const isLastQuestion = currentIndex === quizData.length - 1;
 
-  // Previous button
+  // Previous button - enable if not first question
   prevButton.disabled = currentIndex === 0;
 
-  // Next button
-  nextButton.disabled = currentIndex === quizData.length - 1 || !isAnswered;
+  // Next button - ONLY enable if current question is answered AND not last question
+  nextButton.disabled = !isAnswered || isLastQuestion;
 
-  // Submit button
-  submitButton.disabled = hasSelection === false || isAnswered === true;
+  // Submit button - enable only if has selection AND question is not answered
+  submitButton.disabled = !hasSelection || isAnswered;
+
+  // Update submit button text based on status
+  if (isAnswered) {
+    submitButton.textContent = "✓ Answered";
+  } else {
+    submitButton.textContent = "Submit Answer";
+  }
 }
 
 // ==========================================
@@ -423,7 +430,7 @@ submitButton.addEventListener("click", () => {
     option.classList.add("disabled");
   });
 
-  // Update button states
+  // Update button states after submission
   updateButtonStates();
 
   // Check if this is the last question

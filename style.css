@@ -34,7 +34,7 @@ body {
 }
 
 .quiz-header h1 {
-  color: #2d3436;
+  color: #000d7e;
   font-size: 1.8rem;
   margin-bottom: 15px;
   font-weight: 700;
@@ -69,7 +69,7 @@ body {
 .high-score span {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #6c5ce7;
+  color: #1501ac;
 }
 
 .subtitle {
@@ -117,7 +117,7 @@ body {
 
 .progress {
   height: 100%;
-  background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+  background: linear-gradient(90deg, #09004d, #050046);
   width: 0%;
   transition: width 0.3s ease;
   border-radius: 4px;
@@ -142,7 +142,7 @@ body {
 }
 
 .question-number {
-  color: #6c5ce7;
+  color: #000000;
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 1rem;
@@ -150,7 +150,7 @@ body {
 
 .question-text {
   font-size: 1.2rem;
-  color: #2d3436;
+  color: #00020f;
   line-height: 1.4;
 }
 
@@ -384,7 +384,7 @@ body {
 .result-score {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #6c5ce7;
+  color: #0b005a;
   margin: 15px 0;
 }
 
