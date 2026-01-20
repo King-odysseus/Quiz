@@ -1,38 +1,36 @@
 // ===============================================================
-// Quiz Data And State
+// Quiz Data
 // ===============================================================
-
-// Questions - Object Array
 const quizData = [
   {
     question: "What is the capital of France?",
     options: ["London", "Berlin", "Paris", "Madrid"],
-    correctAnswer: 2, // Paris is at index 2
+    correctAnswer: 2,
   },
   {
     question: "Which planet is known as the Red Planet?",
     options: ["Venus", "Mars", "Jupiter", "Saturn"],
-    correctAnswer: 1, // Mars is at index 1
+    correctAnswer: 1,
   },
   {
     question: "What is 2 + 2?",
     options: ["3", "4", "5", "6"],
-    correctAnswer: 1, // 4 is at index 1
+    correctAnswer: 1,
   },
   {
     question: "What is the largest mammal in the world?",
     options: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
-    correctAnswer: 1, // Blue Whale is at index 1
+    correctAnswer: 1,
   },
   {
     question: "How many continents are there?",
     options: ["5", "6", "7", "8"],
-    correctAnswer: 2, // 7 is at index 2
+    correctAnswer: 2,
   },
   {
     question: "What is the chemical symbol for gold?",
     options: ["Go", "Gd", "Au", "Ag"],
-    correctAnswer: 2, // Au is at index 2
+    correctAnswer: 2,
   },
   {
     question: "Who painted the Mona Lisa?",
@@ -42,12 +40,12 @@ const quizData = [
       "Leonardo da Vinci",
       "Michelangelo",
     ],
-    correctAnswer: 2, // Leonardo da Vinci is at index 2
+    correctAnswer: 2,
   },
   {
     question: "What is the hardest natural substance on Earth?",
     options: ["Gold", "Iron", "Diamond", "Platinum"],
-    correctAnswer: 2, // Diamond is at index 2
+    correctAnswer: 2,
   },
   {
     question: "Which ocean is the largest?",
@@ -57,131 +55,145 @@ const quizData = [
       "Arctic Ocean",
       "Pacific Ocean",
     ],
-    correctAnswer: 3, // Pacific Ocean is at index 3
+    correctAnswer: 3,
   },
   {
     question: "What year did World War II end?",
     options: ["1943", "1944", "1945", "1946"],
-    correctAnswer: 2, // 1945 is at index 2
+    correctAnswer: 2,
   },
 ];
 
+// ===============================================================
+// Quiz State
+// ===============================================================
 const quizState = {
   currentQuestionIndex: 0,
   selectedOptionIndex: null,
   score: 0,
-  isAnswerSubmitted: false,
-  userAnswers: new Array(quizData.length).fill(null), // Initialize with null values
-  answeredQuestions: new Set(), // tracks answered Questions
-  answerScore: new Array(quizData.length).fill(null), // tracks scores for each question
+  userAnswers: new Array(quizData.length).fill(null),
+  answeredQuestions: new Set(),
 };
 
 // ========================================================================
 // High Score Manager
 // ========================================================================
-
 const highScoreManager = {
   storageKey: "quizHighScore",
 
-  // function that gets current highscore from local storage
-  getHighScore: function () {
+  // Get current high score from local storage
+  getHighScore() {
     const storedScore = localStorage.getItem(this.storageKey);
     return storedScore ? parseInt(storedScore) : 0;
   },
 
-  // function that saves new highscore if it is higher than current highscore
-  saveHighScore: function (newScore) {
+  // Save new high score if it's higher than current
+  saveHighScore(newScore) {
     const currentHighScore = this.getHighScore();
     if (newScore > currentHighScore) {
       localStorage.setItem(this.storageKey, newScore.toString());
-      return true; // New high score was set
+      this.updateDisplay(); // Update display after saving
+      return true;
     }
-    return false; // no new highscore
+    return false;
+  },
+
+  // Update the high score display at the top of the page
+  updateDisplay() {
+    const highScoreElement = document.getElementById("high-score-value");
+    if (highScoreElement) {
+      const highScore = this.getHighScore();
+      highScoreElement.textContent = highScore;
+    }
+  },
+
+  // Clear high score (for testing)
+  clearHighScore() {
+    localStorage.removeItem(this.storageKey);
+    this.updateDisplay();
   },
 };
 
 // ===================
-// DOM Elements Selector
+// DOM Elements
 // ===================
+// High score elements
+const highScoreValueElement = document.getElementById("high-score-value");
 
-const questionId = document.getElementById("q-number");
-const optionsContainer = document.getElementById("options-container");
-const questionTextElement = document.getElementById("question-text");
+// Question elements
+const questionNumberElement = document.getElementById("q-number");
 const currentQuestionElement = document.getElementById("current-question");
-const questionNumber = document.getElementById("q-number");
-const nextBtn = document.getElementById("next-btn");
-const prevBtn = document.getElementById("prev-btn");
-const scoreElement = document.getElementById("score");
-const submitBtn = document.getElementById("submit-btn");
-const result = document.getElementById("result-container");
-const finalScore = document.getElementById("final-score");
-const quizContainer = document.getElementById("question-container");
-const restartBtn = document.getElementById("restart-btn");
-const feedback = document.getElementById("feedback");
-const progressBar = document.getElementById("progress-bar");
-const percentage = document.getElementById("percentage");
+const questionTextElement = document.getElementById("question-text");
+const totalQuestionsElement = document.getElementById("total");
+const totalQuestionsSpan = document.getElementById("total-questions");
+const optionsContainer = document.getElementById("options-container");
 
-// ===========
-// Variables
-// ===========
-let currentQuestionNumber = 0;
-let score = 0;
-let clickedOption = null;
+// Navigation buttons
+const prevButton = document.getElementById("prev-btn");
+const nextButton = document.getElementById("next-btn");
+const submitButton = document.getElementById("submit-btn");
+const restartButton = document.getElementById("restart-btn");
+
+// Score and progress
+const scoreElement = document.getElementById("score");
+const progressBar = document.getElementById("progress-bar");
+const progressPercentage = document.getElementById("percentage");
+
+// Feedback and results
+const feedbackElement = document.getElementById("feedback");
+const resultContainer = document.getElementById("result-container");
+const finalScoreElement = document.getElementById("final-score");
+const quizContainer = document.getElementById("question-container");
+const newHighScoreSection = document.getElementById("new-high-score-section");
 
 // =======================================================
 // Initialize Quiz
-// ========================================================
-
+// =======================================================
 function initializeQuiz() {
-  currentQuestionNumber = 0;
-  score = 0;
-
-  // Reset state
+  // Reset quiz state
   quizState.currentQuestionIndex = 0;
   quizState.score = 0;
   quizState.selectedOptionIndex = null;
-  quizState.isAnswerSubmitted = false;
   quizState.userAnswers.fill(null);
   quizState.answeredQuestions.clear();
-  quizState.answerScore.fill(null);
-  clickedOption = null;
 
-  // Use displayQuestion instead of manual updates
-  displayQuestion(currentQuestionNumber);
-
-  // Update score display
-  scoreElement.textContent = score;
-
-  // Update progress bar
+  // Update displays
+  updateScoreDisplay();
+  displayQuestion(0);
   updateProgressBar();
+  updateButtonStates();
 
-  // Reset buttons
-  submitBtn.disabled = true;
-  nextBtn.disabled = true;
-  prevBtn.disabled = true;
+  // Show high score from localStorage
+  highScoreManager.updateDisplay();
 
-  // Hide feedback
+  // Set total questions
+  const totalQuestions = quizData.length;
+  if (totalQuestionsElement) {
+    totalQuestionsElement.textContent = totalQuestions;
+  }
+  if (totalQuestionsSpan) {
+    totalQuestionsSpan.textContent = totalQuestions;
+  }
+
+  // Hide feedback and results
   hideFeedback();
-
-  // Show quiz, hide results
+  resultContainer.style.display = "none";
   quizContainer.style.display = "block";
-  result.style.display = "none";
+  newHighScoreSection.style.display = "none";
 }
 
 // ==========================================
-// Display and Update Options Function - FIXED
-// ===========================================
-
+// Display Question
+// ==========================================
 function displayQuestion(index) {
   const question = quizData[index];
 
-  // update question number and textContent
-  questionId.textContent = index + 1;
+  // Update question number and text
+  questionNumberElement.textContent = index + 1;
   currentQuestionElement.textContent = index + 1;
-  questionNumber.textContent = index + 1;
   questionTextElement.textContent = question.question;
 
-  // update options
+  // Update options
   const allOptions = document.querySelectorAll(".option");
 
   allOptions.forEach((div, i) => {
@@ -194,12 +206,12 @@ function displayQuestion(index) {
       const userAnswer = quizState.userAnswers[index];
       const correctIndex = question.correctAnswer;
 
-      // highlight the correct answer
+      // Highlight correct answer
       if (i === correctIndex) {
         div.classList.add("correct");
       }
 
-      // highlight if user Answer was wrong
+      // Highlight if user answer was wrong
       if (userAnswer === i && userAnswer !== correctIndex) {
         div.classList.add("incorrect");
       }
@@ -218,29 +230,26 @@ function displayQuestion(index) {
 }
 
 // ========================
-// Option Detection Handler
-// =========================
-
+// Option Click Handler
+// ========================
 optionsContainer.addEventListener("click", (e) => {
   const clicked = e.target.closest(".option");
 
-  // Guard clause to make sure user clicks an option else nothing runs
+  // Guard clause
   if (!clicked) return;
 
-  // check to prevent changing answer if already scored
-  if (quizState.answeredQuestions.has(currentQuestionNumber)) {
-    console.log("Can't change answer - already scored!");
+  // Prevent changing answer if already scored
+  if (quizState.answeredQuestions.has(quizState.currentQuestionIndex)) {
     return;
   }
 
-  // To enable toggle which helps user deselect already selected option
-  // check if its already been selected and disable the next button till they click
+  // Toggle selection
   if (clicked.classList.contains("selected")) {
     clicked.classList.remove("selected");
-    nextBtn.disabled = true;
-    submitBtn.disabled = true;
-    clickedOption = null;
-    quizState.userAnswers[currentQuestionNumber] = null;
+    nextButton.disabled = true;
+    submitButton.disabled = true;
+    quizState.selectedOptionIndex = null;
+    quizState.userAnswers[quizState.currentQuestionIndex] = null;
   } else {
     // Remove selection from all options
     const allOptions = document.querySelectorAll(".option");
@@ -248,218 +257,198 @@ optionsContainer.addEventListener("click", (e) => {
       opt.classList.remove("selected");
     });
 
-    // Add selection css to clicked option
+    // Add selection to clicked option
     clicked.classList.add("selected");
-    submitBtn.disabled = false;
-    clickedOption = clicked;
+    submitButton.disabled = false;
 
-    // save user answers
-    quizState.userAnswers[currentQuestionNumber] = parseInt(
-      clicked.getAttribute("data-index"),
-    );
+    // Save user answer
+    const selectedIndex = parseInt(clicked.getAttribute("data-index"));
+    quizState.selectedOptionIndex = selectedIndex;
+    quizState.userAnswers[quizState.currentQuestionIndex] = selectedIndex;
 
     // Enable prev button if not on first question
-    if (currentQuestionNumber > 0) {
-      prevBtn.disabled = false;
+    if (quizState.currentQuestionIndex > 0) {
+      prevButton.disabled = false;
     }
   }
 });
 
 // ========================
-// Navigation Handler - FIXED
+// Navigation Functions
 // ========================
+function goToNextQuestion() {
+  if (quizState.currentQuestionIndex < quizData.length - 1) {
+    quizState.currentQuestionIndex++;
+    displayQuestion(quizState.currentQuestionIndex);
 
-const loadNextQuestion = function () {
-  if (currentQuestionNumber < quizData.length - 1) {
-    currentQuestionNumber++;
-    quizState.currentQuestionIndex = currentQuestionNumber;
-
-    // Use displayQuestion instead of manual updates
-    displayQuestion(currentQuestionNumber);
-
-    submitBtn.disabled = true; // Reset until new selection
-    nextBtn.disabled = true; // Disable until new option is selected
-    prevBtn.disabled = false;
+    submitButton.disabled = true;
+    nextButton.disabled = true;
+    prevButton.disabled = false;
     hideFeedback();
     updateProgressBar();
-
-    // Clear selected option if not already answered
-    if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
-      clickedOption = null;
-    }
   }
 
   // Disable next button on last question
-  if (currentQuestionNumber === quizData.length - 1) {
-    nextBtn.disabled = true;
+  if (quizState.currentQuestionIndex === quizData.length - 1) {
+    nextButton.disabled = true;
   }
-};
+}
 
-// =============
-// Next Button
-// ==============
+function goToPreviousQuestion() {
+  if (quizState.currentQuestionIndex > 0) {
+    quizState.currentQuestionIndex--;
+    displayQuestion(quizState.currentQuestionIndex);
 
-nextBtn.addEventListener("click", loadNextQuestion);
-
-// =============
-// Prev Button - FIXED
-// ==============
-
-prevBtn.addEventListener("click", function () {
-  if (currentQuestionNumber > 0) {
-    currentQuestionNumber--;
-    quizState.currentQuestionIndex = currentQuestionNumber;
-
-    // Use displayQuestion instead of manual updates
-    displayQuestion(currentQuestionNumber);
-
-    submitBtn.disabled = true;
-    nextBtn.disabled = false; // Enable next button when going back
-
-    // Update progress bar
+    submitButton.disabled = true;
+    nextButton.disabled = false;
+    hideFeedback();
     updateProgressBar();
 
-    // Don't clear if already answered
-    if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
-      clickedOption = null;
-    }
-
     // Disable prev button on first question
-    if (currentQuestionNumber === 0) {
-      prevBtn.disabled = true;
+    if (quizState.currentQuestionIndex === 0) {
+      prevButton.disabled = true;
     }
   }
-});
+}
+
+// ========================
+// Button Event Listeners
+// ========================
+nextButton.addEventListener("click", goToNextQuestion);
+prevButton.addEventListener("click", goToPreviousQuestion);
 
 // =======================================
 // Feedback Functions
 // =======================================
-
 function showCorrectFeedback() {
-  feedback.textContent = "✅ Correct! Well done - Move to next question";
-  feedback.className = "feedback correct";
-  feedback.style.display = "block";
+  feedbackElement.textContent = "✅ Correct! Well done - Move to next question";
+  feedbackElement.className = "feedback correct";
+  feedbackElement.style.display = "block";
 }
 
 function showWrongFeedback() {
-  feedback.textContent = "𐄂 Wrong! Move to next question";
-  feedback.className = "feedback incorrect";
-  feedback.style.display = "block";
+  feedbackElement.textContent = "❌ Wrong! Move to next question";
+  feedbackElement.className = "feedback incorrect";
+  feedbackElement.style.display = "block";
 }
 
 function hideFeedback() {
-  feedback.textContent = "";
-  feedback.className = "feedback";
-  feedback.style.display = "none";
+  feedbackElement.textContent = "";
+  feedbackElement.className = "feedback";
+  feedbackElement.style.display = "none";
 }
 
 // ==========================================
-// Check Correct Answer and update score - FIXED
+// Update Score Display
 // ==========================================
+function updateScoreDisplay() {
+  scoreElement.textContent = quizState.score;
+}
 
-submitBtn.addEventListener("click", () => {
-  // Guard Clause
-  if (!clickedOption) {
-    console.log("Please click an option first!");
+// ==========================================
+// Update Progress Bar
+// ==========================================
+function updateProgressBar() {
+  const percent = Math.round(
+    ((quizState.currentQuestionIndex + 1) / quizData.length) * 100,
+  );
+  progressBar.style.width = percent + "%";
+  progressPercentage.textContent = percent + "%";
+}
+
+// ==========================================
+// Update Button States
+// ==========================================
+function updateButtonStates() {
+  const currentIndex = quizState.currentQuestionIndex;
+  const isAnswered = quizState.answeredQuestions.has(currentIndex);
+  const hasSelection = quizState.selectedOptionIndex !== null;
+
+  // Previous button
+  prevButton.disabled = currentIndex === 0;
+
+  // Next button
+  nextButton.disabled = currentIndex === quizData.length - 1 || !isAnswered;
+
+  // Submit button
+  submitButton.disabled = hasSelection === false || isAnswered === true;
+}
+
+// ==========================================
+// Submit Answer
+// ==========================================
+submitButton.addEventListener("click", () => {
+  // Guard clause
+  if (quizState.selectedOptionIndex === null) {
     return;
   }
 
-  const selectedIndex = clickedOption.getAttribute("data-index");
-  const correctIndex = quizData[currentQuestionNumber].correctAnswer;
-  const isCorrect = parseInt(selectedIndex) === correctIndex;
+  const currentIndex = quizState.currentQuestionIndex;
+  const selectedIndex = quizState.selectedOptionIndex;
+  const correctIndex = quizData[currentIndex].correctAnswer;
+  const isCorrect = selectedIndex === correctIndex;
 
   // Check to see if it already has been scored
-  if (!quizState.answeredQuestions.has(currentQuestionNumber)) {
+  if (!quizState.answeredQuestions.has(currentIndex)) {
     if (isCorrect) {
-      score++;
-      quizState.score = score;
-      scoreElement.textContent = score;
-      quizState.answerScore[currentQuestionNumber] = 1; // correct answer
+      quizState.score++;
+      updateScoreDisplay();
+      showCorrectFeedback();
     } else {
-      quizState.answerScore[currentQuestionNumber] = 0; // incorrect
+      showWrongFeedback();
     }
 
-    // mark question as answered
-    quizState.answeredQuestions.add(currentQuestionNumber);
+    // Mark question as answered
+    quizState.answeredQuestions.add(currentIndex);
   } else {
-    console.log("already answered this question!");
-    return; // Don't proceed if already answered
+    return;
   }
 
-  // show feedback
-  if (isCorrect) {
-    showCorrectFeedback();
-    clickedOption.classList.add("correct");
-  } else {
-    clickedOption.classList.add("incorrect");
-    showWrongFeedback();
-  }
-
-  // Disable all options after submission
+  // Update UI for answered question
   const allOptions = document.querySelectorAll(".option");
-  allOptions.forEach((option) => {
-    option.classList.add("disabled");
-  });
 
   // Highlight correct answer
   allOptions.forEach((option) => {
-    if (parseInt(option.getAttribute("data-index")) === correctIndex) {
+    const optionIndex = parseInt(option.getAttribute("data-index"));
+    if (optionIndex === correctIndex) {
       option.classList.add("correct");
     }
+
+    // Highlight incorrect user answer
+    if (optionIndex === selectedIndex && !isCorrect) {
+      option.classList.add("incorrect");
+    }
+
+    // Disable all options
+    option.classList.add("disabled");
   });
 
   // Update button states
-  prevBtn.disabled = false;
-
-  if (currentQuestionNumber < quizData.length - 1) {
-    nextBtn.disabled = false;
-  }
-
-  submitBtn.disabled = true;
+  updateButtonStates();
 
   // Check if this is the last question
-  if (currentQuestionNumber === quizData.length - 1) {
+  if (currentIndex === quizData.length - 1) {
     // Show results after a short delay
     setTimeout(() => {
-      result.style.display = "block";
+      resultContainer.style.display = "block";
       quizContainer.style.display = "none";
-      finalScore.textContent = `${score}/${quizData.length}`;
+      finalScoreElement.textContent = `${quizState.score}/${quizData.length}`;
 
       // Check and save high score
-      if (highScoreManager.saveHighScore(score)) {
-        finalScore.innerHTML += `<br><span class="high-score">New High Score!</span>`;
+      const isNewHighScore = highScoreManager.saveHighScore(quizState.score);
+      if (isNewHighScore) {
+        newHighScoreSection.style.display = "block";
       }
     }, 1000);
   }
 });
 
-// ===========================================
-// Update Progress Bar
-// ===========================================
-function updateProgressBar() {
-  if (!quizData || quizData.length === 0) {
-    progressBar.style.width = "0%";
-    return;
-  }
-
-  const percent = Math.round(
-    ((currentQuestionNumber + 1) / quizData.length) * 100,
-  );
-  progressBar.style.width = percent + "%";
-  percentage.textContent = percent + "%";
-}
-
 // ============================================
-// Function to reset the Question and options
-// =============================================
-
-restartBtn.addEventListener("click", () => {
-  initializeQuiz();
-});
+// Restart Quiz
+// ============================================
+restartButton.addEventListener("click", initializeQuiz);
 
 // ============================================
 // Initialize the quiz when page loads
-// =============================================
-
-// Initialize on page load
+// ============================================
 document.addEventListener("DOMContentLoaded", initializeQuiz);
