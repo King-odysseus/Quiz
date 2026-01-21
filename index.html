@@ -97,35 +97,52 @@
             🎉 New High Score! 🎉
           </div>
 
-          <!-- Player Name Input -->
-          <div class="name-input-container">
-            <label for="player-name">Enter your name to save your score:</label>
-            <div class="input-group">
-              <input
-                type="text"
-                id="player-name"
-                placeholder="Your name (2-20 characters)"
-                maxlength="20"
-              />
-              <button class="btn btn-primary" id="save-score-btn">
-                Save Score
-              </button>
-            </div>
-            <div class="input-hint">
-              Names will be displayed on the leaderboard
-            </div>
-            <div
-              id="name-error"
-              class="error-message"
-              style="display: none"
-            ></div>
-          </div>
-        </div>
+      <!-- 1. Modal Overlay (hidden by default) -->
+<div id="name-modal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🎉 Congratulations!</h3>
+      <p>You scored: <span id="modal-score">0</span>/<span id="modal-total">0</span></p>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-instruction">Enter your name for the leaderboard:</p>
+      
+      <div class="input-group">
+        <input
+          type="text"
+          id="player-name"
+          placeholder="Your name (2-20 characters)"
+          maxlength="20"
+          autocomplete="off"
+        />
+        <button class="btn btn-primary" id="save-score-btn">
+          Save & View Leaderboard
+        </button>
+      </div>
+      
+      <div class="input-hint">
+        ⭐ Your name will be displayed on the public leaderboard
+      </div>
+      
+      <div id="name-error" class="error-message" style="display: none"></div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="skip-save-btn">
+          Skip & Restart
+        </button>
+      </div>
+    </div>
+    
+    <button class="modal-close" id="close-modal-btn">×</button>
+  </div>
+</div>
+
 
         <!-- High Scores List -->
         <div class="high-scores-section">
           <h3>🏆 Leaderboard</h3>
-          <div id="high-scores-list">
+          <div id="score-container">
             <!-- High scores will be dynamically inserted here -->
             <div class="no-scores-message">
               No high scores yet. Be the first!

@@ -146,6 +146,11 @@ const finalScoreElement = document.getElementById("final-score");
 const quizContainer = document.getElementById("question-container");
 const newHighScoreSection = document.getElementById("new-high-score-section");
 
+// Modal Display
+const nameModal = getElementById("name-modal");
+const modalScore = getElementById("modal-score");
+const modalTotal = getElementById("modal-total");
+
 // =======================================================
 // Initialize Quiz
 // =======================================================
