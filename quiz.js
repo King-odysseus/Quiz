@@ -78,16 +78,77 @@ const quizState = {
 // ========================================================================
 // High Score Manager
 // ========================================================================
-const highScoreManager = {
-  storageKey: "quizHighScore",
+const leaderboard = {
+  storageKey: "quizLeaderboard",
+  maxEntries: 5,
 
   // Get current high score from local storage
   getHighScore() {
-    const storedScore = localStorage.getItem(this.storageKey);
-    return storedScore ? parseInt(storedScore) : 0;
+    const storedData = localStorage.getItem(this.storageKey);
+    if (!storedData) {
+      return 0;
+    }
+    try {
+      return parseInt(storedData) || 0;
+    } catch (error) {
+      console.log("Error parsing high score data", error);
+      return 0;
+    }
   },
 
-  // Save new high score if it's higher than current
+  // Get leaderboard
+  getLeaderboard() {
+    const storedData = localStorage.getItem(this.storageKey + "_leaderboard");
+    if (!storedData) {
+      return [];
+    }
+    try {
+      return JSON.parse(storedData);
+    } catch (error) {
+      console.log("Error parsing leaderboard data", error);
+      return [];
+    }
+  },
+
+  saveToLeaderboard(playerName, playerScore) {
+    // FIXED: Changed playername to playerName
+    const leaderboardEntries = this.getLeaderboard();
+
+    // Add new entry
+    leaderboardEntries.push({
+      name: playerName,
+      score: playerScore,
+      date: new Date().toISOString(),
+    });
+
+    // Sort by score (highest first) and keep only top entries
+    leaderboardEntries.sort((a, b) => b.score - a.score);
+    const trimmedEntries = leaderboardEntries.slice(0, this.maxEntries);
+
+    // Save back to localStorage
+    localStorage.setItem(
+      this.storageKey + "_leaderboard",
+      JSON.stringify(trimmedEntries),
+    );
+
+    return trimmedEntries;
+  },
+
+  // Check if a score qualifies for the leaderboard
+  isHighScoreQualifying(score) {
+    const leaderboardEntries = this.getLeaderboard();
+
+    // If leaderboard isn't full, any score qualifies
+    if (leaderboardEntries.length < this.maxEntries) {
+      return true;
+    }
+
+    // Check if score is higher than the lowest score on leaderboard
+    const lowestScore = leaderboardEntries[leaderboardEntries.length - 1].score;
+    return score > lowestScore;
+  },
+
+  // Save new high score if it's higher than current absolute high score
   saveHighScore(newScore) {
     const currentHighScore = this.getHighScore();
     if (newScore > currentHighScore) {
@@ -112,44 +173,114 @@ const highScoreManager = {
     localStorage.removeItem(this.storageKey);
     this.updateDisplay();
   },
+
+  // Clear leaderboard (for testing)
+  clearLeaderboard() {
+    localStorage.removeItem(this.storageKey + "_leaderboard");
+  },
+
+  // Display leaderboard in the UI (if you have a leaderboard section)
+  displayLeaderboard() {
+    const leaderboardEntries = this.getLeaderboard();
+    const leaderboardElement = document.getElementById("leaderboard-list");
+
+    if (!leaderboardElement) return;
+
+    if (leaderboardEntries.length === 0) {
+      leaderboardElement.innerHTML =
+        '<li class="empty">No scores yet. Be the first!</li>';
+      return;
+    }
+
+    let html = "";
+    leaderboardEntries.forEach((entry, index) => {
+      const date = new Date(entry.date);
+      const formattedDate = date.toLocaleDateString();
+      html += `
+        <li>
+          <span class="rank">${index + 1}.</span>
+          <span class="name">${entry.name}</span>
+          <span class="score">${entry.score}</span>
+          <span class="date">${formattedDate}</span>
+        </li>
+      `;
+    });
+
+    leaderboardElement.innerHTML = html;
+  },
 };
 
-// ===================
-// DOM Elements
-// ===================
-// High score elements
-const highScoreValueElement = document.getElementById("high-score-value");
+// ==========================================
+// Initialize DOM Elements
+// ==========================================
+let highScoreValueElement;
+let questionNumberElement;
+let currentQuestionElement;
+let questionTextElement;
+let totalQuestionsElement;
+let totalQuestionsSpan;
+let optionsContainer;
+let prevButton;
+let nextButton;
+let submitButton;
+let restartButton;
+let scoreElement;
+let progressBar;
+let progressPercentage;
+let feedbackElement;
+let resultContainer;
+let finalScoreElement;
+let quizContainer;
+let newHighScoreSection;
+let nameModal;
+let modalScore;
+let modalTotal;
+let playerNameInput;
+let saveScoreBtn;
+let skipSaveBtn;
+let closeModalBtn;
+let nameError;
 
-// Question elements
-const questionNumberElement = document.getElementById("q-number");
-const currentQuestionElement = document.getElementById("current-question");
-const questionTextElement = document.getElementById("question-text");
-const totalQuestionsElement = document.getElementById("total");
-const totalQuestionsSpan = document.getElementById("total-questions");
-const optionsContainer = document.getElementById("options-container");
+function initializeDOMElements() {
+  // High score elements
+  highScoreValueElement = document.getElementById("high-score-value");
 
-// Navigation buttons
-const prevButton = document.getElementById("prev-btn");
-const nextButton = document.getElementById("next-btn");
-const submitButton = document.getElementById("submit-btn");
-const restartButton = document.getElementById("restart-btn");
+  // Question elements
+  questionNumberElement = document.getElementById("q-number");
+  currentQuestionElement = document.getElementById("current-question");
+  questionTextElement = document.getElementById("question-text");
+  totalQuestionsElement = document.getElementById("total");
+  totalQuestionsSpan = document.getElementById("total-questions");
+  optionsContainer = document.getElementById("options-container");
 
-// Score and progress
-const scoreElement = document.getElementById("score");
-const progressBar = document.getElementById("progress-bar");
-const progressPercentage = document.getElementById("percentage");
+  // Navigation buttons
+  prevButton = document.getElementById("prev-btn");
+  nextButton = document.getElementById("next-btn");
+  submitButton = document.getElementById("submit-btn");
+  restartButton = document.getElementById("restart-btn");
 
-// Feedback and results
-const feedbackElement = document.getElementById("feedback");
-const resultContainer = document.getElementById("result-container");
-const finalScoreElement = document.getElementById("final-score");
-const quizContainer = document.getElementById("question-container");
-const newHighScoreSection = document.getElementById("new-high-score-section");
+  // Score and progress
+  scoreElement = document.getElementById("score");
+  progressBar = document.getElementById("progress-bar");
+  progressPercentage = document.getElementById("percentage");
 
-// Modal Display
-const nameModal = getElementById("name-modal");
-const modalScore = getElementById("modal-score");
-const modalTotal = getElementById("modal-total");
+  // Feedback and results
+  feedbackElement = document.getElementById("feedback");
+  resultContainer = document.getElementById("result-container");
+  finalScoreElement = document.getElementById("final-score");
+  quizContainer = document.getElementById("question-container");
+  newHighScoreSection = document.getElementById("new-high-score-section");
+
+  // Modal Display
+  nameModal = document.getElementById("name-modal");
+  modalScore = document.getElementById("modal-score");
+  modalTotal = document.getElementById("modal-total");
+  playerNameInput = document.getElementById("player-name");
+  saveScoreBtn = document.getElementById("save-score-btn");
+  skipSaveBtn = document.getElementById("skip-save-btn");
+  closeModalBtn = document.getElementById("close-modal-btn");
+  nameError = document.getElementById("name-error");
+}
 
 // =======================================================
 // Initialize Quiz
@@ -169,7 +300,7 @@ function initializeQuiz() {
   updateButtonStates();
 
   // Show high score from localStorage
-  highScoreManager.updateDisplay();
+  leaderboard.updateDisplay(); // FIXED: Changed from highScoreManager to leaderboard
 
   // Set total questions
   const totalQuestions = quizData.length;
@@ -185,6 +316,11 @@ function initializeQuiz() {
   resultContainer.style.display = "none";
   quizContainer.style.display = "block";
   newHighScoreSection.style.display = "none";
+
+  // Hide modal if it's open
+  if (nameModal) {
+    nameModal.style.display = "none";
+  }
 }
 
 // ==========================================
@@ -198,13 +334,17 @@ function displayQuestion(index) {
   currentQuestionElement.textContent = index + 1;
   questionTextElement.textContent = question.question;
 
-  // Update options
+  // Clear all options first
   const allOptions = document.querySelectorAll(".option");
-
   allOptions.forEach((div, i) => {
-    div.querySelector(".option-text").textContent = question.options[i];
-    div.setAttribute("data-index", i);
+    // Reset classes
     div.className = "option";
+
+    // Update option text
+    if (i < question.options.length) {
+      div.querySelector(".option-text").textContent = question.options[i];
+      div.setAttribute("data-index", i);
+    }
 
     // Check if this question has been answered
     if (quizState.answeredQuestions.has(index)) {
@@ -230,6 +370,15 @@ function displayQuestion(index) {
       div.classList.add("disabled");
     }
   });
+
+  // Update selected option for unanswered questions
+  if (!quizState.answeredQuestions.has(index)) {
+    const userAnswer = quizState.userAnswers[index];
+    if (userAnswer !== null && allOptions[userAnswer]) {
+      allOptions[userAnswer].classList.add("selected");
+    }
+  }
+
   updateButtonStates();
   updateProgressBar();
 }
@@ -237,41 +386,38 @@ function displayQuestion(index) {
 // ========================
 // Option Click Handler
 // ========================
-optionsContainer.addEventListener("click", (e) => {
-  const clicked = e.target.closest(".option");
+function setupOptionListeners() {
+  if (optionsContainer) {
+    optionsContainer.addEventListener("click", (e) => {
+      const clicked = e.target.closest(".option");
 
-  // Guard clause
-  if (!clicked) return;
+      // Guard clause
+      if (!clicked) return;
 
-  // Prevent changing answer if already scored
-  if (quizState.answeredQuestions.has(quizState.currentQuestionIndex)) {
-    return;
-  }
+      // Prevent changing answer if already scored
+      if (quizState.answeredQuestions.has(quizState.currentQuestionIndex)) {
+        return;
+      }
 
-  // Toggle selection
-  if (clicked.classList.contains("selected")) {
-    clicked.classList.remove("selected");
-    quizState.selectedOptionIndex = null;
-    quizState.userAnswers[quizState.currentQuestionIndex] = null;
-  } else {
-    // Remove selection from all options
-    const allOptions = document.querySelectorAll(".option");
-    allOptions.forEach((opt) => {
-      opt.classList.remove("selected");
+      // Remove selection from all options
+      const allOptions = document.querySelectorAll(".option");
+      allOptions.forEach((opt) => {
+        opt.classList.remove("selected");
+      });
+
+      // Add selection to clicked option
+      clicked.classList.add("selected");
+
+      // Save user answer
+      const selectedIndex = parseInt(clicked.getAttribute("data-index"));
+      quizState.selectedOptionIndex = selectedIndex;
+      quizState.userAnswers[quizState.currentQuestionIndex] = selectedIndex;
+
+      // Update button states after selection
+      updateButtonStates();
     });
-
-    // Add selection to clicked option
-    clicked.classList.add("selected");
-
-    // Save user answer
-    const selectedIndex = parseInt(clicked.getAttribute("data-index"));
-    quizState.selectedOptionIndex = selectedIndex;
-    quizState.userAnswers[quizState.currentQuestionIndex] = selectedIndex;
   }
-
-  // Update button states after selection
-  updateButtonStates();
-});
+}
 
 // ========================
 // Navigation Functions
@@ -316,48 +462,73 @@ function goToPreviousQuestion() {
 // ========================
 // Button Event Listeners
 // ========================
-nextButton.addEventListener("click", goToNextQuestion);
-prevButton.addEventListener("click", goToPreviousQuestion);
+function setupNavigationListeners() {
+  if (nextButton) {
+    nextButton.addEventListener("click", goToNextQuestion);
+  }
+
+  if (prevButton) {
+    prevButton.addEventListener("click", goToPreviousQuestion);
+  }
+
+  if (restartButton) {
+    restartButton.addEventListener("click", initializeQuiz);
+  }
+
+  if (submitButton) {
+    submitButton.addEventListener("click", handleSubmit);
+  }
+}
 
 // =======================================
 // Feedback Functions
 // =======================================
 function showCorrectFeedback() {
-  feedbackElement.textContent =
-    "✅ Correct! You can now move to the next question";
-  feedbackElement.className = "feedback correct";
-  feedbackElement.style.display = "block";
+  if (feedbackElement) {
+    feedbackElement.textContent =
+      "✅ Correct! You can now move to the next question";
+    feedbackElement.className = "feedback correct";
+    feedbackElement.style.display = "block";
+  }
 }
 
 function showWrongFeedback() {
-  feedbackElement.textContent =
-    "❌ Wrong! You can now move to the next question";
-  feedbackElement.className = "feedback incorrect";
-  feedbackElement.style.display = "block";
+  if (feedbackElement) {
+    feedbackElement.textContent =
+      "❌ Wrong! You can now move to the next question";
+    feedbackElement.className = "feedback incorrect";
+    feedbackElement.style.display = "block";
+  }
 }
 
 function hideFeedback() {
-  feedbackElement.textContent = "";
-  feedbackElement.className = "feedback";
-  feedbackElement.style.display = "none";
+  if (feedbackElement) {
+    feedbackElement.textContent = "";
+    feedbackElement.className = "feedback";
+    feedbackElement.style.display = "none";
+  }
 }
 
 // ==========================================
 // Update Score Display
 // ==========================================
 function updateScoreDisplay() {
-  scoreElement.textContent = quizState.score;
+  if (scoreElement) {
+    scoreElement.textContent = quizState.score;
+  }
 }
 
 // ==========================================
 // Update Progress Bar
 // ==========================================
 function updateProgressBar() {
-  const percent = Math.round(
-    ((quizState.currentQuestionIndex + 1) / quizData.length) * 100,
-  );
-  progressBar.style.width = percent + "%";
-  progressPercentage.textContent = percent + "%";
+  if (progressBar && progressPercentage) {
+    const percent = Math.round(
+      ((quizState.currentQuestionIndex + 1) / quizData.length) * 100,
+    );
+    progressBar.style.width = percent + "%";
+    progressPercentage.textContent = percent + "%";
+  }
 }
 
 // ==========================================
@@ -370,26 +541,32 @@ function updateButtonStates() {
   const isLastQuestion = currentIndex === quizData.length - 1;
 
   // Previous button - enable if not first question
-  prevButton.disabled = currentIndex === 0;
+  if (prevButton) {
+    prevButton.disabled = currentIndex === 0;
+  }
 
   // Next button - ONLY enable if current question is answered AND not last question
-  nextButton.disabled = !isAnswered || isLastQuestion;
+  if (nextButton) {
+    nextButton.disabled = !isAnswered || isLastQuestion;
+  }
 
   // Submit button - enable only if has selection AND question is not answered
-  submitButton.disabled = !hasSelection || isAnswered;
+  if (submitButton) {
+    submitButton.disabled = !hasSelection || isAnswered;
 
-  // Update submit button text based on status
-  if (isAnswered) {
-    submitButton.textContent = "✓ Answered";
-  } else {
-    submitButton.textContent = "Submit Answer";
+    // Update submit button text based on status
+    if (isAnswered) {
+      submitButton.textContent = "✓ Answered";
+    } else {
+      submitButton.textContent = "Submit Answer";
+    }
   }
 }
 
 // ==========================================
 // Submit Answer
 // ==========================================
-submitButton.addEventListener("click", () => {
+function handleSubmit() {
   // Guard clause
   if (quizState.selectedOptionIndex === null) {
     return;
@@ -442,25 +619,133 @@ submitButton.addEventListener("click", () => {
   if (currentIndex === quizData.length - 1) {
     // Show results after a short delay
     setTimeout(() => {
-      resultContainer.style.display = "block";
-      quizContainer.style.display = "none";
-      finalScoreElement.textContent = `${quizState.score}/${quizData.length}`;
+      if (resultContainer) {
+        resultContainer.style.display = "block";
+      }
+      if (quizContainer) {
+        quizContainer.style.display = "none";
+      }
+      if (finalScoreElement) {
+        finalScoreElement.textContent = `${quizState.score}/${quizData.length}`;
+      }
 
       // Check and save high score
-      const isNewHighScore = highScoreManager.saveHighScore(quizState.score);
-      if (isNewHighScore) {
+      const isNewHighScore = leaderboard.saveHighScore(quizState.score); // FIXED: Changed from highScoreManager
+      if (isNewHighScore && newHighScoreSection) {
         newHighScoreSection.style.display = "block";
       }
+
+      // Show modal for leaderboard entry
+      showScoreModal();
     }, 1000);
   }
-});
+}
 
 // ============================================
-// Restart Quiz
+// Modal Functions
 // ============================================
-restartButton.addEventListener("click", initializeQuiz);
+function showScoreModal() {
+  const score = quizState.score;
+
+  // Check if score qualifies for leaderboard
+  if (leaderboard.isHighScoreQualifying(score)) {
+    // Show modal to enter name
+    if (nameModal) {
+      nameModal.style.display = "flex";
+    }
+    if (modalScore) {
+      modalScore.textContent = score;
+    }
+    if (modalTotal) {
+      modalTotal.textContent = quizData.length;
+    }
+  } else {
+    // Just show results without modal
+    if (nameModal) {
+      nameModal.style.display = "none";
+    }
+  }
+}
+
+function saveLeaderboardEntry() {
+  const playerName = playerNameInput.value.trim();
+  const score = quizState.score;
+
+  if (playerName.length < 2) {
+    if (nameError) {
+      nameError.textContent = "Please enter at least 2 characters";
+    }
+    return;
+  }
+
+  // Save to leaderboard
+  leaderboard.saveToLeaderboard(playerName, score);
+
+  // Also save as high score if it's the highest
+  leaderboard.saveHighScore(score);
+
+  // Close modal and show updated leaderboard
+  if (nameModal) {
+    nameModal.style.display = "none";
+  }
+  if (nameError) {
+    nameError.textContent = "";
+  }
+  if (playerNameInput) {
+    playerNameInput.value = "";
+  }
+
+  // Update leaderboard display
+  leaderboard.displayLeaderboard();
+  leaderboard.updateDisplay();
+}
+
+function setupModalListeners() {
+  if (saveScoreBtn) {
+    saveScoreBtn.addEventListener("click", saveLeaderboardEntry);
+  }
+
+  if (skipSaveBtn) {
+    skipSaveBtn.addEventListener("click", () => {
+      if (nameModal) {
+        nameModal.style.display = "none";
+      }
+      if (nameError) {
+        nameError.textContent = "";
+      }
+      if (playerNameInput) {
+        playerNameInput.value = "";
+      }
+    });
+  }
+
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener("click", () => {
+      if (nameModal) {
+        nameModal.style.display = "none";
+      }
+      if (nameError) {
+        nameError.textContent = "";
+      }
+      if (playerNameInput) {
+        playerNameInput.value = "";
+      }
+    });
+  }
+}
 
 // ============================================
 // Initialize the quiz when page loads
 // ============================================
-document.addEventListener("DOMContentLoaded", initializeQuiz);
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize DOM elements
+  initializeDOMElements();
+
+  // Setup event listeners
+  setupOptionListeners();
+  setupNavigationListeners();
+  setupModalListeners();
+
+  // Initialize the quiz
+  initializeQuiz();
+});
