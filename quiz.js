@@ -182,7 +182,7 @@ const leaderboard = {
   // Display leaderboard in the UI (if you have a leaderboard section)
   displayLeaderboard() {
     const leaderboardEntries = this.getLeaderboard();
-    const leaderboardElement = document.getElementById("leaderboard-list");
+    const leaderboardElement = document.getElementById("score-container");
 
     if (!leaderboardElement) return;
 
@@ -680,6 +680,7 @@ function saveLeaderboardEntry() {
 
   // Save to leaderboard
   leaderboard.saveToLeaderboard(playerName, score);
+  console.log(localStorage.getItem("leaderboard"));
 
   // Also save as high score if it's the highest
   leaderboard.saveHighScore(score);

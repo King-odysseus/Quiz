@@ -613,7 +613,7 @@ body {
 
 /* Save Score Button */
 #save-score-btn {
-  padding: 15px 25px;
+  padding: 15px 15px;
   background: #e0e5ec;
   border: none;
   border-radius: 15px;
@@ -622,19 +622,12 @@ body {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* CHANGE: Remove white-space: nowrap; and add word wrapping */
-  white-space: normal;
-  word-wrap: break-word;
-  text-align: center;
-  line-height: 1.4;
-  min-height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  white-space: wrap
   box-shadow:
     4px 4px 8px #bebebe,
     -4px -4px 8px #ffffff;
 }
+
 #save-score-btn:hover {
   transform: translateY(-2px);
   box-shadow:
