@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -84,69 +84,17 @@
       </div>
 
       <!-- Results Container -->
-      <div class="result-container" id="result-container">
+      <div class="result-container" id="result-container" style="display: none">
         <span class="trophy">🏆</span>
         <h2 class="result-title">Quiz Completed!</h2>
 
         <!-- Final Score Display -->
         <div class="result-score" id="final-score">0/10</div>
 
-        <!-- New High Score Section (Initially Hidden) -->
+        <!-- New High Score Message (Initially Hidden) -->
         <div id="new-high-score-section" style="display: none">
           <div class="high-score-message" id="high-score-message">
             🎉 New High Score! 🎉
-          </div>
-
-      <!-- 1. Modal Overlay (hidden by default) -->
-<div id="name-modal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>🎉 Congratulations!</h3>
-      <p>You scored: <span id="modal-score">0</span>/<span id="modal-total">0</span></p>
-    </div>
-    
-    <div class="modal-body">
-      <p class="modal-instruction">Enter your name for the leaderboard:</p>
-      
-      <div class="input-group">
-        <input
-          type="text"
-          id="player-name"
-          placeholder="Your name (2-20 characters)"
-          maxlength="20"
-          autocomplete="off"
-        />
-        <button class="btn btn-primary" id="save-score-btn">
-          Save & View Leaderboard
-        </button>
-      </div>
-      
-      <div class="input-hint">
-        ⭐ Your name will be displayed on the public leaderboard
-      </div>
-      
-      <div id="name-error" class="error-message" style="display: none"></div>
-      
-      <div class="modal-actions">
-        <button class="btn btn-secondary" id="skip-save-btn">
-          Skip & Restart
-        </button>
-      </div>
-    </div>
-    
-    <button class="modal-close" id="close-modal-btn">×</button>
-  </div>
-</div>
-
-
-        <!-- High Scores List -->
-        <div class="high-scores-section">
-          <h3>🏆 Leaderboard</h3>
-          <div id="score-container">
-            <!-- High scores will be dynamically inserted here -->
-            <div class="no-scores-message">
-              No high scores yet. Be the first!
-            </div>
           </div>
         </div>
 
@@ -155,7 +103,6 @@
           You're a quiz master! Keep learning and challenging yourself.
         </div>
 
-        <!-- Buttons -->
         <div class="buttons-container">
           <button class="btn btn-secondary" id="restart-btn">
             ↻ Restart Quiz
@@ -163,9 +110,130 @@
           <button class="btn btn-primary" id="review-btn">
             📝 Review Answers
           </button>
+          <button class="btn btn-primary" id="leaderboard-btn">
+            🏆 View Leaderboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Review Answers Container (New) -->
+      <div class="review-container" id="review-container" style="display: none">
+        <div class="review-header">
+          <h2>📝 Review Your Answers</h2>
+          <p class="review-subtitle">See what you got right and wrong</p>
+        </div>
+
+        <div class="review-summary">
+          <div class="summary-card correct">
+            <div class="summary-icon">✅</div>
+            <div class="summary-content">
+              <div class="summary-label">Correct</div>
+              <div class="summary-value" id="correct-count">0</div>
+            </div>
+          </div>
+          <div class="summary-card incorrect">
+            <div class="summary-icon">❌</div>
+            <div class="summary-content">
+              <div class="summary-label">Incorrect</div>
+              <div class="summary-value" id="incorrect-count">0</div>
+            </div>
+          </div>
+          <div class="summary-card score">
+            <div class="summary-icon">📊</div>
+            <div class="summary-content">
+              <div class="summary-label">Score</div>
+              <div class="summary-value" id="review-score">0/10</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-questions" id="review-questions">
+          <!-- Review questions will be dynamically inserted here -->
+        </div>
+
+        <div class="buttons-container">
+          <button class="btn btn-secondary" id="back-to-results-btn">
+            ← Back to Results
+          </button>
+          <button class="btn btn-primary" id="restart-after-review-btn">
+            ↻ Take Quiz Again
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- 1. Modal Overlay (hidden by default) - MOVED OUTSIDE QUIZ CONTAINER -->
+    <div id="name-modal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>🎉 Congratulations!</h3>
+          <p>
+            You scored: <span id="modal-score">0</span>/<span id="modal-total"
+              >0</span
+            >
+          </p>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-instruction">Enter your name for the leaderboard:</p>
+
+          <div class="input-group">
+            <input
+              type="text"
+              id="player-name"
+              placeholder="Your name (2-20 characters)"
+              maxlength="20"
+              autocomplete="off"
+            />
+            <button class="btn btn-primary" id="save-score-btn">
+              Save & View Leaderboard
+            </button>
+          </div>
+
+          <div class="input-hint">
+            ⭐ Your name will be displayed on the public leaderboard
+          </div>
+
+          <div
+            id="name-error"
+            class="error-message"
+            style="display: none"
+          ></div>
+
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="skip-save-btn">
+              Skip & Restart
+            </button>
+          </div>
+        </div>
+
+        <button class="modal-close" id="close-modal-btn">×</button>
+      </div>
+    </div>
+
+    <!-- High Scores List - MOVED OUTSIDE QUIZ CONTAINER -->
+    <div
+      class="high-scores-section"
+      id="high-scores-section"
+      style="display: none"
+    >
+      <div class="quiz-container">
+        <h3>🏆 Leaderboard</h3>
+        <div id="score-container">
+          <!-- High scores will be dynamically inserted here -->
+          <div class="no-scores-message">No high scores yet. Be the first!</div>
+        </div>
+        <div class="buttons-container">
+          <button class="btn btn-secondary" id="back-to-quiz-btn">
+            ← Back to Quiz
+          </button>
+          <button class="btn btn-danger" id="clear-leaderboard-btn">
+            Clear Leaderboard
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="quiz.js"></script>
   </body>
 </html>

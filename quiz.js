@@ -22,48 +22,48 @@ const quizData = [
     options: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
     correctAnswer: 1,
   },
-  {
-    question: "How many continents are there?",
-    options: ["5", "6", "7", "8"],
-    correctAnswer: 2,
-  },
-  {
-    question: "What is the chemical symbol for gold?",
-    options: ["Go", "Gd", "Au", "Ag"],
-    correctAnswer: 2,
-  },
-  {
-    question: "Who painted the Mona Lisa?",
-    options: [
-      "Vincent van Gogh",
-      "Pablo Picasso",
-      "Leonardo da Vinci",
-      "Michelangelo",
-    ],
-    correctAnswer: 2,
-  },
-  {
-    question: "What is the hardest natural substance on Earth?",
-    options: ["Gold", "Iron", "Diamond", "Platinum"],
-    correctAnswer: 2,
-  },
-  {
-    question: "Which ocean is the largest?",
-    options: [
-      "Atlantic Ocean",
-      "Indian Ocean",
-      "Arctic Ocean",
-      "Pacific Ocean",
-    ],
-    correctAnswer: 3,
-  },
-  {
-    question: "What year did World War II end?",
-    options: ["1943", "1944", "1945", "1946"],
-    correctAnswer: 2,
-  },
+  // {
+  //   question: "How many continents are there?",
+  //   options: ["5", "6", "7", "8"],
+  //   correctAnswer: 2,
+  // },
+  // {
+  //   question: "What is the chemical symbol for gold?",
+  //   options: ["Go", "Gd", "Au", "Ag"],
+  //   correctAnswer: 2,
+  // },
+  // {
+  //   question: "Who painted the Mona Lisa?",
+  //   options: [
+  //     "Vincent van Gogh",
+  //     "Pablo Picasso",
+  //     "Leonardo da Vinci",
+  //     "Michelangelo",
+  //   ],
+  //   correctAnswer: 2,
+  // },
+  // {
+  //   question: "What is the hardest natural substance on Earth?",
+  //   options: ["Gold", "Iron", "Diamond", "Platinum"],
+  //   correctAnswer: 2,
+  // },
+  // {
+  //   question: "Which ocean is the largest?",
+  //   options: [
+  //     "Atlantic Ocean",
+  //     "Indian Ocean",
+  //     "Arctic Ocean",
+  //     "Pacific Ocean",
+  //   ],
+  //   correctAnswer: 3,
+  // },
+  // {
+  //   question: "What year did World War II end?",
+  //   options: ["1943", "1944", "1945", "1946"],
+  //   correctAnswer: 2,
+  // },
 ];
-
+//
 // ===============================================================
 // Quiz State
 // ===============================================================
@@ -80,25 +80,11 @@ const quizState = {
 // ========================================================================
 const leaderboard = {
   storageKey: "quizLeaderboard",
-  maxEntries: 5,
-
-  // Get current high score from local storage
-  getHighScore() {
-    const storedData = localStorage.getItem(this.storageKey);
-    if (!storedData) {
-      return 0;
-    }
-    try {
-      return parseInt(storedData) || 0;
-    } catch (error) {
-      console.log("Error parsing high score data", error);
-      return 0;
-    }
-  },
+  maxEntries: 10,
 
   // Get leaderboard
   getLeaderboard() {
-    const storedData = localStorage.getItem(this.storageKey + "_leaderboard");
+    const storedData = localStorage.getItem(this.storageKey);
     if (!storedData) {
       return [];
     }
@@ -110,85 +96,96 @@ const leaderboard = {
     }
   },
 
-  saveToLeaderboard(playerName, playerScore) {
-    // FIXED: Changed playername to playerName
+  saveToLeaderboard(playerName, playerScore, totalQuestions) {
     const leaderboardEntries = this.getLeaderboard();
+
+    const percentage = Math.round((playerScore / totalQuestions) * 100);
 
     // Add new entry
     leaderboardEntries.push({
       name: playerName,
       score: playerScore,
+      total: totalQuestions,
+      percentage: percentage,
       date: new Date().toISOString(),
     });
 
-    // Sort by score (highest first) and keep only top entries
-    leaderboardEntries.sort((a, b) => b.score - a.score);
+    // Sort by percentage (descending), then by date (earlier first for ties)
+    leaderboardEntries.sort((a, b) => {
+      if (b.percentage !== a.percentage) {
+        return b.percentage - a.percentage;
+      }
+      return new Date(a.date) - new Date(b.date);
+    });
+
+    // Keep only top entries
     const trimmedEntries = leaderboardEntries.slice(0, this.maxEntries);
 
     // Save back to localStorage
-    localStorage.setItem(
-      this.storageKey + "_leaderboard",
-      JSON.stringify(trimmedEntries),
-    );
+    localStorage.setItem(this.storageKey, JSON.stringify(trimmedEntries));
 
-    return trimmedEntries;
+    // Return player's position (1-based index)
+    const playerPosition =
+      trimmedEntries.findIndex(
+        (entry) => entry.name === playerName && entry.score === playerScore,
+      ) + 1;
+
+    return {
+      leaderboard: trimmedEntries,
+      playerPosition: playerPosition,
+      madeLeaderboard: playerPosition <= this.maxEntries,
+    };
   },
 
   // Check if a score qualifies for the leaderboard
-  isHighScoreQualifying(score) {
+  isHighScoreQualifying(score, total) {
     const leaderboardEntries = this.getLeaderboard();
+    const percentage = Math.round((score / total) * 100);
 
     // If leaderboard isn't full, any score qualifies
     if (leaderboardEntries.length < this.maxEntries) {
       return true;
     }
 
-    // Check if score is higher than the lowest score on leaderboard
-    const lowestScore = leaderboardEntries[leaderboardEntries.length - 1].score;
-    return score > lowestScore;
+    // Check if percentage is higher than the lowest percentage on leaderboard
+    const lowestPercentage =
+      leaderboardEntries[leaderboardEntries.length - 1].percentage;
+    return percentage >= lowestPercentage;
   },
 
-  // Save new high score if it's higher than current absolute high score
-  saveHighScore(newScore) {
-    const currentHighScore = this.getHighScore();
-    if (newScore > currentHighScore) {
-      localStorage.setItem(this.storageKey, newScore.toString());
-      this.updateDisplay(); // Update display after saving
-      return true;
+  getHighestScore() {
+    const leaderboardEntries = this.getLeaderboard();
+    if (leaderboardEntries.length === 0) {
+      return { score: 0, total: 0 };
     }
-    return false;
+    return {
+      score: leaderboardEntries[0].score,
+      total: leaderboardEntries[0].total,
+    };
   },
 
   // Update the high score display at the top of the page
   updateDisplay() {
-    const highScoreElement = document.getElementById("high-score-value");
-    if (highScoreElement) {
-      const highScore = this.getHighScore();
-      highScoreElement.textContent = highScore;
+    const highScoreValueElement = document.getElementById("high-score-value");
+    if (highScoreValueElement) {
+      const highestScore = this.getHighestScore();
+      highScoreValueElement.textContent = `${highestScore.score}/${highestScore.total}`;
     }
   },
 
-  // Clear high score (for testing)
-  clearHighScore() {
-    localStorage.removeItem(this.storageKey);
-    this.updateDisplay();
-  },
-
-  // Clear leaderboard (for testing)
-  clearLeaderboard() {
-    localStorage.removeItem(this.storageKey + "_leaderboard");
-  },
-
-  // Display leaderboard in the UI (if you have a leaderboard section)
+  // Display leaderboard in the UI
   displayLeaderboard() {
     const leaderboardEntries = this.getLeaderboard();
-    const leaderboardElement = document.getElementById("score-container");
+    const scoreContainer = document.getElementById("score-container");
 
-    if (!leaderboardElement) return;
+    if (!scoreContainer) return;
 
     if (leaderboardEntries.length === 0) {
-      leaderboardElement.innerHTML =
-        '<li class="empty">No scores yet. Be the first!</li>';
+      scoreContainer.innerHTML = `
+        <div class="no-scores-message">
+          No high scores yet. Be the first!
+        </div>
+      `;
       return;
     }
 
@@ -196,17 +193,31 @@ const leaderboard = {
     leaderboardEntries.forEach((entry, index) => {
       const date = new Date(entry.date);
       const formattedDate = date.toLocaleDateString();
+      const medal =
+        index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "";
+
       html += `
-        <li>
-          <span class="rank">${index + 1}.</span>
-          <span class="name">${entry.name}</span>
-          <span class="score">${entry.score}</span>
-          <span class="date">${formattedDate}</span>
-        </li>
+        <div class="score-item ${index < 3 ? "top-score" : ""}">
+          <div class="score-rank">${medal} #${index + 1}</div>
+          <div class="score-name">${entry.name}</div>
+          <div class="score-value">${entry.score}/${entry.total}</div>
+          <div class="score-percentage">${entry.percentage}%</div>
+          <div class="score-date">${formattedDate}</div>
+        </div>
       `;
     });
 
-    leaderboardElement.innerHTML = html;
+    scoreContainer.innerHTML = html;
+  },
+
+  // Clear leaderboard (for testing)
+  clearLeaderboard() {
+    if (confirm("Are you sure you want to clear all high scores?")) {
+      localStorage.removeItem(this.storageKey);
+      this.updateDisplay();
+      this.displayLeaderboard();
+      alert("Leaderboard cleared!");
+    }
   },
 };
 
@@ -240,6 +251,19 @@ let saveScoreBtn;
 let skipSaveBtn;
 let closeModalBtn;
 let nameError;
+let highScoresSection;
+let backToQuizBtn;
+let clearLeaderboardBtn;
+let leaderboardBtn;
+let reviewBtn;
+let reviewContainer;
+let correctCountElement;
+let incorrectCountElement;
+let reviewScoreElement;
+let reviewQuestionsContainer;
+let backToResultsBtn;
+let restartAfterReviewBtn;
+let resultMessage;
 
 function initializeDOMElements() {
   // High score elements
@@ -258,6 +282,8 @@ function initializeDOMElements() {
   nextButton = document.getElementById("next-btn");
   submitButton = document.getElementById("submit-btn");
   restartButton = document.getElementById("restart-btn");
+  reviewBtn = document.getElementById("review-btn");
+  leaderboardBtn = document.getElementById("leaderboard-btn");
 
   // Score and progress
   scoreElement = document.getElementById("score");
@@ -270,6 +296,16 @@ function initializeDOMElements() {
   finalScoreElement = document.getElementById("final-score");
   quizContainer = document.getElementById("question-container");
   newHighScoreSection = document.getElementById("new-high-score-section");
+  resultMessage = document.getElementById("result-message");
+
+  // Review elements
+  reviewContainer = document.getElementById("review-container");
+  correctCountElement = document.getElementById("correct-count");
+  incorrectCountElement = document.getElementById("incorrect-count");
+  reviewScoreElement = document.getElementById("review-score");
+  reviewQuestionsContainer = document.getElementById("review-questions");
+  backToResultsBtn = document.getElementById("back-to-results-btn");
+  restartAfterReviewBtn = document.getElementById("restart-after-review-btn");
 
   // Modal Display
   nameModal = document.getElementById("name-modal");
@@ -280,6 +316,11 @@ function initializeDOMElements() {
   skipSaveBtn = document.getElementById("skip-save-btn");
   closeModalBtn = document.getElementById("close-modal-btn");
   nameError = document.getElementById("name-error");
+
+  // Leaderboard section
+  highScoresSection = document.getElementById("high-scores-section");
+  backToQuizBtn = document.getElementById("back-to-quiz-btn");
+  clearLeaderboardBtn = document.getElementById("clear-leaderboard-btn");
 }
 
 // =======================================================
@@ -300,7 +341,7 @@ function initializeQuiz() {
   updateButtonStates();
 
   // Show high score from localStorage
-  leaderboard.updateDisplay(); // FIXED: Changed from highScoreManager to leaderboard
+  leaderboard.updateDisplay();
 
   // Set total questions
   const totalQuestions = quizData.length;
@@ -311,16 +352,14 @@ function initializeQuiz() {
     totalQuestionsSpan.textContent = totalQuestions;
   }
 
-  // Hide feedback and results
+  // Hide all containers except question container
   hideFeedback();
-  resultContainer.style.display = "none";
-  quizContainer.style.display = "block";
-  newHighScoreSection.style.display = "none";
-
-  // Hide modal if it's open
-  if (nameModal) {
-    nameModal.style.display = "none";
-  }
+  if (resultContainer) resultContainer.style.display = "none";
+  if (quizContainer) quizContainer.style.display = "block";
+  if (newHighScoreSection) newHighScoreSection.style.display = "none";
+  if (highScoresSection) highScoresSection.style.display = "none";
+  if (nameModal) nameModal.style.display = "none";
+  if (reviewContainer) reviewContainer.style.display = "none";
 }
 
 // ==========================================
@@ -478,6 +517,32 @@ function setupNavigationListeners() {
   if (submitButton) {
     submitButton.addEventListener("click", handleSubmit);
   }
+
+  if (reviewBtn) {
+    reviewBtn.addEventListener("click", showReview);
+  }
+
+  if (leaderboardBtn) {
+    leaderboardBtn.addEventListener("click", showLeaderboard);
+  }
+
+  if (backToQuizBtn) {
+    backToQuizBtn.addEventListener("click", hideLeaderboard);
+  }
+
+  if (clearLeaderboardBtn) {
+    clearLeaderboardBtn.addEventListener("click", () => {
+      leaderboard.clearLeaderboard();
+    });
+  }
+
+  if (backToResultsBtn) {
+    backToResultsBtn.addEventListener("click", backToResults);
+  }
+
+  if (restartAfterReviewBtn) {
+    restartAfterReviewBtn.addEventListener("click", initializeQuiz);
+  }
 }
 
 // =======================================
@@ -629,11 +694,8 @@ function handleSubmit() {
         finalScoreElement.textContent = `${quizState.score}/${quizData.length}`;
       }
 
-      // Check and save high score
-      const isNewHighScore = leaderboard.saveHighScore(quizState.score); // FIXED: Changed from highScoreManager
-      if (isNewHighScore && newHighScoreSection) {
-        newHighScoreSection.style.display = "block";
-      }
+      // Update result message based on score
+      updateResultMessage();
 
       // Show modal for leaderboard entry
       showScoreModal();
@@ -642,13 +704,132 @@ function handleSubmit() {
 }
 
 // ============================================
+// Review Functions
+// ============================================
+function showReview() {
+  if (resultContainer) resultContainer.style.display = "none";
+  if (quizContainer) quizContainer.style.display = "none";
+  if (highScoresSection) highScoresSection.style.display = "none";
+  if (reviewContainer) {
+    reviewContainer.style.display = "block";
+    displayReview();
+  }
+}
+
+function displayReview() {
+  const totalQuestions = quizData.length;
+  const correctAnswers = quizState.score;
+  const incorrectAnswers = totalQuestions - correctAnswers;
+
+  // Update summary
+  if (correctCountElement) correctCountElement.textContent = correctAnswers;
+  if (incorrectCountElement)
+    incorrectCountElement.textContent = incorrectAnswers;
+  if (reviewScoreElement)
+    reviewScoreElement.textContent = `${correctAnswers}/${totalQuestions}`;
+
+  // Generate review questions
+  let reviewHTML = "";
+
+  quizData.forEach((question, index) => {
+    const userAnswer = quizState.userAnswers[index];
+    const correctAnswer = question.correctAnswer;
+    const isCorrect = userAnswer === correctAnswer;
+    const userAnswerText =
+      userAnswer !== null ? question.options[userAnswer] : "Not answered";
+    const correctAnswerText = question.options[correctAnswer];
+
+    reviewHTML += `
+      <div class="review-question-item ${isCorrect ? "correct" : "incorrect"}">
+        <div class="review-question-header">
+          <div class="review-question-number">Question ${index + 1}</div>
+          <div class="review-question-status ${isCorrect ? "correct" : "incorrect"}">
+            ${isCorrect ? "✅ Correct" : "❌ Incorrect"}
+          </div>
+        </div>
+        
+        <div class="review-question-text">${question.question}</div>
+        
+        <div class="review-options">
+          ${question.options
+            .map((option, optionIndex) => {
+              let optionClass = "review-option";
+              let isUserAnswer = userAnswer === optionIndex;
+              let isCorrectAnswer = optionIndex === correctAnswer;
+
+              if (isCorrectAnswer) optionClass += " correct-answer";
+              if (isUserAnswer && isCorrectAnswer)
+                optionClass += " user-answer";
+              if (isUserAnswer && !isCorrectAnswer)
+                optionClass += " user-incorrect";
+
+              return `
+              <div class="${optionClass}">
+                <div class="review-option-letter">${String.fromCharCode(65 + optionIndex)}</div>
+                <div class="review-option-text">${option}</div>
+              </div>
+            `;
+            })
+            .join("")}
+        </div>
+        
+        ${
+          !isCorrect
+            ? `
+          <div class="review-explanation">
+            <span class="explanation-label">Your answer:</span> ${userAnswerText}<br>
+            <span class="explanation-label">Correct answer:</span> ${correctAnswerText}
+          </div>
+        `
+            : ""
+        }
+      </div>
+    `;
+  });
+
+  if (reviewQuestionsContainer) {
+    reviewQuestionsContainer.innerHTML = reviewHTML;
+  }
+}
+
+function backToResults() {
+  if (reviewContainer) reviewContainer.style.display = "none";
+  if (resultContainer) resultContainer.style.display = "block";
+}
+
+function updateResultMessage() {
+  if (!resultMessage) return;
+
+  const percentage = (quizState.score / quizData.length) * 100;
+
+  if (percentage === 100) {
+    resultMessage.textContent = "Perfect score! 🎉 You're a quiz master!";
+  } else if (percentage >= 80) {
+    resultMessage.textContent = "Excellent work! 🏅 You know your stuff!";
+  } else if (percentage >= 60) {
+    resultMessage.textContent = "Good job! 👍 Keep learning and improving!";
+  } else if (percentage >= 40) {
+    resultMessage.textContent = "Not bad! 📚 Try again to improve your score!";
+  } else {
+    resultMessage.textContent =
+      "Keep practicing! 💪 Every quiz makes you better!";
+  }
+}
+
+// ============================================
 // Modal Functions
 // ============================================
 function showScoreModal() {
   const score = quizState.score;
+  const total = quizData.length;
 
   // Check if score qualifies for leaderboard
-  if (leaderboard.isHighScoreQualifying(score)) {
+  if (leaderboard.isHighScoreQualifying(score, total)) {
+    // Show new high score message
+    if (newHighScoreSection) {
+      newHighScoreSection.style.display = "block";
+    }
+
     // Show modal to enter name
     if (nameModal) {
       nameModal.style.display = "flex";
@@ -657,7 +838,7 @@ function showScoreModal() {
       modalScore.textContent = score;
     }
     if (modalTotal) {
-      modalTotal.textContent = quizData.length;
+      modalTotal.textContent = total;
     }
   } else {
     // Just show results without modal
@@ -670,35 +851,54 @@ function showScoreModal() {
 function saveLeaderboardEntry() {
   const playerName = playerNameInput.value.trim();
   const score = quizState.score;
+  const total = quizData.length;
 
-  if (playerName.length < 2) {
+  if (playerName.length < 2 || playerName.length > 20) {
     if (nameError) {
-      nameError.textContent = "Please enter at least 2 characters";
+      nameError.textContent = "Please enter a name between 2-20 characters";
+      nameError.style.display = "block";
     }
     return;
   }
 
   // Save to leaderboard
-  leaderboard.saveToLeaderboard(playerName, score);
-  console.log(localStorage.getItem("leaderboard"));
+  const result = leaderboard.saveToLeaderboard(playerName, score, total);
 
   // Also save as high score if it's the highest
-  leaderboard.saveHighScore(score);
+  leaderboard.updateDisplay();
 
-  // Close modal and show updated leaderboard
+  // Close modal
   if (nameModal) {
     nameModal.style.display = "none";
   }
   if (nameError) {
+    nameError.style.display = "none";
     nameError.textContent = "";
   }
   if (playerNameInput) {
     playerNameInput.value = "";
   }
 
-  // Update leaderboard display
-  leaderboard.displayLeaderboard();
-  leaderboard.updateDisplay();
+  // Show success message
+  alert(
+    `🎉 Score saved! You placed #${result.playerPosition} on the leaderboard!`,
+  );
+}
+
+function showLeaderboard() {
+  if (quizContainer) quizContainer.style.display = "none";
+  if (resultContainer) resultContainer.style.display = "none";
+  if (reviewContainer) reviewContainer.style.display = "none";
+  if (highScoresSection) {
+    highScoresSection.style.display = "block";
+    leaderboard.displayLeaderboard();
+  }
+}
+
+function hideLeaderboard() {
+  if (highScoresSection) highScoresSection.style.display = "none";
+  if (quizContainer) quizContainer.style.display = "block";
+  initializeQuiz();
 }
 
 function setupModalListeners() {
@@ -712,11 +912,14 @@ function setupModalListeners() {
         nameModal.style.display = "none";
       }
       if (nameError) {
+        nameError.style.display = "none";
         nameError.textContent = "";
       }
       if (playerNameInput) {
         playerNameInput.value = "";
       }
+      // Initialize a new quiz
+      initializeQuiz();
     });
   }
 
@@ -726,10 +929,24 @@ function setupModalListeners() {
         nameModal.style.display = "none";
       }
       if (nameError) {
+        nameError.style.display = "none";
         nameError.textContent = "";
       }
       if (playerNameInput) {
         playerNameInput.value = "";
+      }
+    });
+  }
+
+  // Also close modal when clicking outside
+  if (nameModal) {
+    nameModal.addEventListener("click", (e) => {
+      if (e.target === nameModal) {
+        nameModal.style.display = "none";
+        if (nameError) {
+          nameError.style.display = "none";
+          nameError.textContent = "";
+        }
       }
     });
   }
