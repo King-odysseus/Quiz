@@ -22,47 +22,441 @@ const quizData = [
     options: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
     correctAnswer: 1,
   },
-  // {
-  //   question: "How many continents are there?",
-  //   options: ["5", "6", "7", "8"],
-  //   correctAnswer: 2,
-  // },
-  // {
-  //   question: "What is the chemical symbol for gold?",
-  //   options: ["Go", "Gd", "Au", "Ag"],
-  //   correctAnswer: 2,
-  // },
-  // {
-  //   question: "Who painted the Mona Lisa?",
-  //   options: [
-  //     "Vincent van Gogh",
-  //     "Pablo Picasso",
-  //     "Leonardo da Vinci",
-  //     "Michelangelo",
-  //   ],
-  //   correctAnswer: 2,
-  // },
-  // {
-  //   question: "What is the hardest natural substance on Earth?",
-  //   options: ["Gold", "Iron", "Diamond", "Platinum"],
-  //   correctAnswer: 2,
-  // },
-  // {
-  //   question: "Which ocean is the largest?",
-  //   options: [
-  //     "Atlantic Ocean",
-  //     "Indian Ocean",
-  //     "Arctic Ocean",
-  //     "Pacific Ocean",
-  //   ],
-  //   correctAnswer: 3,
-  // },
-  // {
-  //   question: "What year did World War II end?",
-  //   options: ["1943", "1944", "1945", "1946"],
-  //   correctAnswer: 2,
-  // },
+  {
+    question: "How many continents are there?",
+    options: ["5", "6", "7", "8"],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the chemical symbol for gold?",
+    options: ["Go", "Gd", "Au", "Ag"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Who painted the Mona Lisa?",
+    options: [
+      "Vincent van Gogh",
+      "Pablo Picasso",
+      "Leonardo da Vinci",
+      "Michelangelo",
+    ],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the hardest natural substance on Earth?",
+    options: ["Gold", "Iron", "Diamond", "Platinum"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Which ocean is the largest?",
+    options: [
+      "Atlantic Ocean",
+      "Indian Ocean",
+      "Arctic Ocean",
+      "Pacific Ocean",
+    ],
+    correctAnswer: 3,
+  },
+  {
+    question: "What year did World War II end?",
+    options: ["1943", "1944", "1945", "1946"],
+    correctAnswer: 2,
+  },
 ];
+
+// ===============================================================
+// Game Mode & Multiplayer State
+// ===============================================================
+const gameConfig = {
+  mode: "single", // 'single' or 'multiplayer'
+  totalQuestions: 10, // We'll make this configurable later
+  players: [
+    {
+      id: 1,
+      name: "Player 1",
+      score: 0,
+      selectedOptionIndex: null,
+      userAnswers: [],
+      isCurrentPlayer: true,
+    },
+    {
+      id: 2,
+      name: "Player 2",
+      score: 0,
+      selectedOptionIndex: null,
+      userAnswers: [],
+      isCurrentPlayer: false,
+    },
+  ],
+  currentPlayerIndex: 0,
+  answeredPlayers: new Set(), // Track which players have answered current question
+};
+// ===============================================================
+// Game Mode Selection
+// ===============================================================
+function setupGameModeSelection() {
+  const {
+    singleModeBtn,
+    multiplayerModeBtn,
+    playerNamesSection,
+    startMultiplayerBtn,
+    player1NameInput,
+    player2NameInput,
+  } = initializeMultiplayerDOMElements();
+
+  if (!singleModeBtn || !multiplayerModeBtn) return;
+
+  // Single player mode
+  singleModeBtn.addEventListener("click", () => {
+    gameConfig.mode = "single";
+    singleModeBtn.classList.add("active");
+    multiplayerModeBtn.classList.remove("active");
+    playerNamesSection.style.display = "none";
+
+    // Reset to single player mode
+    hideMultiplayerUI();
+    initializeQuiz(); // Restart quiz in single player mode
+  });
+
+  // Multiplayer mode
+  multiplayerModeBtn.addEventListener("click", () => {
+    gameConfig.mode = "multiplayer";
+    multiplayerModeBtn.classList.add("active");
+    singleModeBtn.classList.remove("active");
+    playerNamesSection.style.display = "block";
+  });
+
+  // Start multiplayer game
+  if (startMultiplayerBtn) {
+    startMultiplayerBtn.addEventListener("click", () => {
+      // Update player names
+      gameConfig.players[0].name = player1NameInput.value.trim() || "Player 1";
+      gameConfig.players[1].name = player2NameInput.value.trim() || "Player 2";
+
+      // Reset game state for multiplayer
+      resetMultiplayerGame();
+
+      // Show multiplayer UI
+      setupMultiplayerUI();
+
+      // Initialize multiplayer quiz
+      initializeMultiplayerQuiz();
+    });
+  }
+}
+
+// ===============================================================
+// Multiplayer UI Functions
+// ===============================================================
+function setupMultiplayerUI() {
+  // Check if players container already exists
+  let playersContainer = document.querySelector(".players-container");
+
+  if (!playersContainer) {
+    // Create players container HTML
+    playersContainer = document.createElement("div");
+    playersContainer.className = "players-container";
+
+    playersContainer.innerHTML = `
+      <div class="player-panel" data-player-id="1">
+        <div class="player-name">${gameConfig.players[0].name}</div>
+        <div class="player-score">Score: <span class="player-score-value">0</span></div>
+        <div class="player-turn-indicator">🎤 YOUR TURN</div>
+      </div>
+      
+      <div class="player-panel" data-player-id="2">
+        <div class="player-name">${gameConfig.players[1].name}</div>
+        <div class="player-score">Score: <span class="player-score-value">0</span></div>
+        <div class="player-turn-indicator">Waiting...</div>
+      </div>
+    `;
+
+    // Insert before the question container
+    const questionContainer = document.querySelector(".question-container");
+    if (questionContainer) {
+      questionContainer.parentNode.insertBefore(
+        playersContainer,
+        questionContainer,
+      );
+    }
+  }
+
+  // Update player names in case they changed
+  updatePlayerPanels();
+}
+
+function hideMultiplayerUI() {
+  const playersContainer = document.querySelector(".players-container");
+  if (playersContainer) {
+    playersContainer.remove();
+  }
+}
+
+function updatePlayerPanels() {
+  gameConfig.players.forEach((player, index) => {
+    const panel = document.querySelector(`[data-player-id="${player.id}"]`);
+    if (panel) {
+      // Update name
+      const nameElement = panel.querySelector(".player-name");
+      if (nameElement) {
+        nameElement.textContent = player.name;
+      }
+
+      // Update score
+      const scoreElement = panel.querySelector(".player-score-value");
+      if (scoreElement) {
+        scoreElement.textContent = player.score;
+      }
+
+      // Update turn indicator
+      const indicator = panel.querySelector(".player-turn-indicator");
+      if (indicator) {
+        if (index === gameConfig.currentPlayerIndex) {
+          indicator.textContent = "🎤 YOUR TURN";
+          panel.classList.add("active");
+        } else {
+          indicator.textContent = "Waiting...";
+          panel.classList.remove("active");
+        }
+      }
+    }
+  });
+}
+// ===============================================================
+// Multiplayer Quiz Functions
+// ===============================================================
+function initializeMultiplayerQuiz() {
+  // Reset game config
+  resetMultiplayerGame();
+
+  // Hide other sections
+  if (resultContainer) resultContainer.style.display = "none";
+  if (quizContainer) quizContainer.style.display = "block";
+  if (reviewContainer) reviewContainer.style.display = "none";
+
+  // Reset quiz state for single player compatibility
+  quizState.currentQuestionIndex = 0;
+  quizState.score = 0;
+  quizState.selectedOptionIndex = null;
+  quizState.userAnswers.fill(null);
+  quizState.answeredQuestions.clear();
+
+  // Update displays
+  updateScoreDisplay();
+  displayQuestion(0);
+  updateProgressBar();
+  updateButtonStates();
+
+  // Setup multiplayer-specific listeners
+  setupMultiplayerOptionListeners();
+}
+
+function resetMultiplayerGame() {
+  // Reset players
+  gameConfig.players.forEach((player) => {
+    player.score = 0;
+    player.selectedOptionIndex = null;
+    player.userAnswers = [];
+  });
+
+  gameConfig.players[0].isCurrentPlayer = true;
+  gameConfig.players[1].isCurrentPlayer = false;
+  gameConfig.currentPlayerIndex = 0;
+  gameConfig.answeredPlayers.clear();
+
+  // Update UI
+  updatePlayerPanels();
+}
+
+// ===============================================================
+// Multiplayer Option Selection
+// ===============================================================
+function setupMultiplayerOptionListeners() {
+  if (optionsContainer) {
+    // Remove existing listener if any
+    optionsContainer.removeEventListener("click", handleMultiplayerOptionClick);
+
+    // Add multiplayer listener
+    optionsContainer.addEventListener("click", handleMultiplayerOptionClick);
+  }
+}
+
+function handleMultiplayerOptionClick(e) {
+  // Only handle clicks in multiplayer mode
+  if (gameConfig.mode !== "multiplayer") {
+    return; // Fall back to single player behavior
+  }
+
+  const clicked = e.target.closest(".option");
+  if (!clicked) return;
+
+  const currentPlayer = gameConfig.players[gameConfig.currentPlayerIndex];
+
+  // Check if current player has already answered this question
+  if (gameConfig.answeredPlayers.has(currentPlayer.id)) {
+    return;
+  }
+
+  // Remove previous selection for this player
+  const allOptions = document.querySelectorAll(".option");
+  allOptions.forEach((opt) => {
+    opt.classList.remove(`selected-player-${currentPlayer.id}`);
+  });
+
+  // Add new selection
+  clicked.classList.add(`selected-player-${currentPlayer.id}`);
+
+  // Save selection
+  const selectedIndex = parseInt(clicked.getAttribute("data-index"));
+  currentPlayer.selectedOptionIndex = selectedIndex;
+
+  // Ensure userAnswers array is long enough
+  if (!currentPlayer.userAnswers[quizState.currentQuestionIndex]) {
+    currentPlayer.userAnswers[quizState.currentQuestionIndex] = selectedIndex;
+  }
+
+  // Mark player as answered
+  gameConfig.answeredPlayers.add(currentPlayer.id);
+
+  // Check if both players have answered
+  if (gameConfig.answeredPlayers.size === gameConfig.players.length) {
+    // Both players answered - show results after delay
+    setTimeout(processMultiplayerAnswers, 1000);
+  } else {
+    // Switch to next player
+    switchToNextPlayer();
+  }
+
+  updateButtonStates();
+}
+// ===============================================================
+// Player Turn Management
+// ===============================================================
+function switchToNextPlayer() {
+  // Remove active class from current player
+  const currentPanel = document.querySelector(
+    `[data-player-id="${gameConfig.players[gameConfig.currentPlayerIndex].id}"]`,
+  );
+  if (currentPanel) {
+    currentPanel.classList.remove("active");
+  }
+
+  // Move to next player
+  gameConfig.currentPlayerIndex =
+    (gameConfig.currentPlayerIndex + 1) % gameConfig.players.length;
+
+  // Update UI
+  updatePlayerPanels();
+}
+
+function processMultiplayerAnswers() {
+  const currentQuestion = quizData[quizState.currentQuestionIndex];
+  const correctAnswer = currentQuestion.correctAnswer;
+
+  // Check each player's answer
+  gameConfig.players.forEach((player) => {
+    if (player.selectedOptionIndex === correctAnswer) {
+      player.score++;
+
+      // Highlight their correct choice
+      const playerOptions = document.querySelectorAll(
+        `.selected-player-${player.id}`,
+      );
+      playerOptions.forEach((opt) => {
+        opt.classList.add("correct");
+      });
+    } else {
+      // Highlight their incorrect choice
+      const playerOptions = document.querySelectorAll(
+        `.selected-player-${player.id}`,
+      );
+      playerOptions.forEach((opt) => {
+        opt.classList.add("incorrect");
+      });
+    }
+
+    // Clear selection for next question
+    player.selectedOptionIndex = null;
+  });
+
+  // Highlight correct answer for all to see
+  const allOptions = document.querySelectorAll(".option");
+  allOptions.forEach((opt) => {
+    const optionIndex = parseInt(opt.getAttribute("data-index"));
+    if (optionIndex === correctAnswer) {
+      opt.classList.add("correct");
+    }
+    opt.classList.add("disabled");
+  });
+
+  // Mark question as answered in single player state for compatibility
+  quizState.answeredQuestions.add(quizState.currentQuestionIndex);
+  quizState.score = Math.max(...gameConfig.players.map((p) => p.score));
+
+  // Update score display
+  updateScoreDisplay();
+  updatePlayerPanels();
+
+  // Enable next button
+  if (nextButton) {
+    nextButton.disabled = false;
+  }
+
+  // Clear answered players for next question
+  gameConfig.answeredPlayers.clear();
+
+  // Reset to player 1 for next question
+  gameConfig.currentPlayerIndex = 0;
+  updatePlayerPanels();
+}
+
+// ===============================================================
+// Initialize Multiplayer DOM Elements
+// ===============================================================
+function initializeMultiplayerDOMElements() {
+  // Game mode selector elements
+  const singleModeBtn = document.querySelector('[data-mode="single"]');
+  const multiplayerModeBtn = document.querySelector(
+    '[data-mode="multiplayer"]',
+  );
+  const playerNamesSection = document.getElementById("player-names-section");
+  const startMultiplayerBtn = document.getElementById("start-multiplayer-btn");
+  const player1NameInput = document.getElementById("player1-name");
+  const player2NameInput = document.getElementById("player2-name");
+
+  return {
+    singleModeBtn,
+    multiplayerModeBtn,
+    playerNamesSection,
+    startMultiplayerBtn,
+    player1NameInput,
+    player2NameInput,
+  };
+}
+
+// ===============================================================
+// Initialize Multiplayer DOM Elements
+// ===============================================================
+function initializeMultiplayerDOMElements() {
+  // Game mode selector elements
+  const singleModeBtn = document.querySelector('[data-mode="single"]');
+  const multiplayerModeBtn = document.querySelector(
+    '[data-mode="multiplayer"]',
+  );
+  const playerNamesSection = document.getElementById("player-names-section");
+  const startMultiplayerBtn = document.getElementById("start-multiplayer-btn");
+  const player1NameInput = document.getElementById("player1-name");
+  const player2NameInput = document.getElementById("player2-name");
+
+  return {
+    singleModeBtn,
+    multiplayerModeBtn,
+    playerNamesSection,
+    startMultiplayerBtn,
+    player1NameInput,
+    player2NameInput,
+  };
+}
 //
 // ===============================================================
 // Quiz State
@@ -409,6 +803,22 @@ function displayQuestion(index) {
       div.classList.add("disabled");
     }
   });
+  // Reset multiplayer state for new question (if in multiplayer mode)
+  if (gameConfig.mode === "multiplayer") {
+    gameConfig.answeredPlayers.clear();
+
+    // Clear player-specific selections
+    const allOptions = document.querySelectorAll(".option");
+    allOptions.forEach((opt) => {
+      gameConfig.players.forEach((player) => {
+        opt.classList.remove(`selected-player-${player.id}`);
+      });
+    });
+
+    // Reset current player to player 1
+    gameConfig.currentPlayerIndex = 0;
+    updatePlayerPanels();
+  }
 
   // Update selected option for unanswered questions
   if (!quizState.answeredQuestions.has(index)) {
@@ -632,6 +1042,9 @@ function updateButtonStates() {
 // Submit Answer
 // ==========================================
 function handleSubmit() {
+  if (gameConfig.mode === "multiplayer") {
+    return;
+  }
   // Guard clause
   if (quizState.selectedOptionIndex === null) {
     return;
@@ -958,6 +1371,8 @@ function setupModalListeners() {
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize DOM elements
   initializeDOMElements();
+  // Setup game mode selection FIRST
+  setupGameModeSelection();
 
   // Setup event listeners
   setupOptionListeners();

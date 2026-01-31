@@ -20,6 +20,37 @@
         <p class="subtitle">Test your knowledge across various topics!</p>
       </div>
 
+      <div class="game-mode-selector">
+        <h3>🎮 Select Game Mode</h3>
+        <div class="mode-buttons">
+          <button class="mode-btn active" data-mode="single">
+            🎯 Solo Practice
+          </button>
+          <button class="mode-btn" data-mode="multiplayer">
+            ⚔️ 2-Player Battle
+          </button>
+        </div>
+        <div id="player-names-section" style="display: none">
+          <div class="player-name-inputs">
+            <input
+              type="text"
+              id="player1-name"
+              placeholder="Player 1 Name"
+              value="Player 1"
+            />
+            <input
+              type="text"
+              id="player2-name"
+              placeholder="Player 2 Name"
+              value="Player 2"
+            />
+            <button id="start-multiplayer-btn" class="btn btn-primary">
+              Start Battle!
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Progress Section -->
       <div class="progress-container">
         <div class="score-display">
