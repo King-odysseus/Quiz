@@ -15,9 +15,9 @@ body {
   padding: 15px;
 }
 
-/* Main Container - UNIFORM NEUMORPHISM */
+/* Main Container */
 .quiz-container {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 25px;
   box-shadow:
     20px 20px 60px #bebebe,
@@ -37,7 +37,7 @@ body {
 }
 
 .quiz-header h1 {
-  color: #000d7e;
+  color: #000d7e; /* Navy Blue */
   font-size: 2rem;
   margin-bottom: 15px;
   font-weight: 800;
@@ -55,8 +55,8 @@ body {
 
 /* High Score */
 .high-score {
-  background: #e0e5ec;
-  color: #2d3436;
+  background: #e0e5ec; /* Ash */
+  color: #222; /* Very dark grey */
   padding: 15px 30px;
   border-radius: 20px;
   font-weight: 700;
@@ -75,11 +75,11 @@ body {
 .high-score span {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #1501ac;
+  color: #2b2923; /* Gold (background only) */
 }
 
 .subtitle {
-  color: #636e72;
+  color: #444; /* Dark grey */
   font-size: 1.1rem;
   line-height: 1.5;
   max-width: 500px;
@@ -87,11 +87,9 @@ body {
   text-align: center;
 }
 
-/* ============================================
-   GAME MODE SELECTOR - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Game Mode Selector */
 .game-mode-selector {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   padding: 30px;
   border-radius: 25px;
   margin: 30px 0;
@@ -101,11 +99,8 @@ body {
     inset 8px 8px 16px rgba(255, 255, 255, 0.6),
     inset -8px -8px 16px rgba(190, 190, 190, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
 }
 
-/* Mode Buttons Container */
 .mode-buttons {
   display: flex;
   gap: 20px;
@@ -116,18 +111,16 @@ body {
   flex: 1;
   padding: 20px;
   border: none;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 18px;
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  color: #2d3436;
+  transition: all 0.4s;
+  color: #222; /* Very dark grey */
   box-shadow:
     8px 8px 16px #bebebe,
     -8px -8px 16px #ffffff;
-  position: relative;
-  overflow: hidden;
   min-height: 70px;
   display: flex;
   align-items: center;
@@ -142,24 +135,17 @@ body {
 }
 
 .mode-btn.active {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   box-shadow:
     inset 6px 6px 12px rgba(190, 190, 190, 0.5),
     inset -6px -6px 12px rgba(255, 255, 255, 0.8),
-    0 0 0 4px rgba(76, 175, 80, 0.25);
-  border: 2px solid rgba(76, 175, 80, 0.5);
-  color: #2d3436;
+    0 0 0 4px rgba(0, 13, 126, 0.25); /* Navy blue glow */
+  border: 2px solid #000d7e; /* Navy Blue */
+  color: #222; /* Very dark grey */
   transform: translateY(-2px);
 }
 
-.mode-btn:hover:not(.active) {
-  box-shadow:
-    12px 12px 24px #bebebe,
-    -12px -12px 24px #ffffff,
-    0 0 0 3px rgba(33, 150, 243, 0.15);
-}
-
-/* Player Name Inputs - UNIFORM NEUMORPHISM */
+/* Player Name Inputs */
 .player-name-inputs {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
@@ -171,10 +157,10 @@ body {
 .player-name-inputs input {
   padding: 18px;
   border: none;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 15px;
   font-size: 1.1rem;
-  color: #2d3436;
+  color: #222; /* Very dark grey */
   box-shadow:
     inset 6px 6px 12px #bebebe,
     inset -6px -6px 12px #ffffff;
@@ -187,145 +173,104 @@ body {
   box-shadow:
     inset 8px 8px 16px #bebebe,
     inset -8px -8px 16px #ffffff,
-    0 0 0 3px rgba(108, 99, 255, 0.25);
-  transform: translateY(-2px);
+    0 0 0 3px rgba(0, 13, 126, 0.25); /* Navy blue */
+  border: 1px solid #000d7e; /* Navy Blue */
 }
 
-.player-name-inputs input::placeholder {
-  color: #95a5a6;
-  font-weight: 500;
-}
-
-/* "Add AI Player" button - ENHANCED */
-.player-name-inputs .mode-btn {
-  padding: 18px;
-  font-size: 1rem;
-  min-height: auto;
-  box-shadow:
-    6px 6px 12px #bebebe,
-    -6px -6px 12px #ffffff;
-}
-
-.player-name-inputs .mode-btn:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    8px 8px 16px #bebebe,
-    -8px -8px 16px #ffffff;
-}
-
-/* ============================================
-   START BATTLE BUTTON - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Start Battle Button */
 #start-multiplayer-btn {
+  /* Centering */
   grid-column: 1 / -1;
-  width: 100%;
-  margin-top: 15px;
-  padding: 22px;
+  justify-self: center; 
+  margin: 15px auto 0 auto; 
+
+  /* Size */
+  width: 60%; 
+  max-width: 350px; 
+
+  padding: 12px 20px; 
   border: none;
-  border-radius: 18px;
-  font-size: 1.3rem;
-  font-weight: 800;
+  border-radius: 12px; 
+  font-size: 1rem; 
+  font-weight: 600; 
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.3s ease; 
+
+  /* Layout */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 70px;
-  position: relative;
-  overflow: hidden;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #6c63ff 0%, #4a44c8 100%);
-  color: white;
+  min-height: 50px; /
+  /* Colors */
+  background: linear-gradient(135deg, #000d7e 0%, #00114d 100%);
+  color: #f8f8f8;
   box-shadow:
-    10px 10px 20px #bebebe,
-    -10px -10px 20px #ffffff,
-    0 0 30px rgba(108, 99, 255, 0.4);
+    6px 6px 12px #bebebe,
+    /* Reduced shadow */ -6px -6px 12px #ffffff,
+    0 0 20px rgba(0, 13, 126, 0.3); 
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
+
+  box-sizing: border-box; 
 
 #start-multiplayer-btn:hover:not(:disabled) {
-  transform: translateY(-4px);
+  transform: translateY(-2px); 
   box-shadow:
-    15px 15px 30px #bebebe,
-    -15px -15px 30px #ffffff,
-    0 0 40px rgba(108, 99, 255, 0.6);
+    8px 8px 16px #bebebe,
+    -8px -8px 16px #ffffff,
+    0 0 25px rgba(0, 13, 126, 0.4);
 }
 
+/* Active effect */
 #start-multiplayer-btn:active:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow:
-    inset 6px 6px 12px rgba(0, 0, 0, 0.2),
-    inset -6px -6px 12px rgba(255, 255, 255, 0.2),
-    0 0 30px rgba(108, 99, 255, 0.4);
+    inset 3px 3px 6px rgba(0, 0, 0, 0.2),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.2),
+    0 0 20px rgba(0, 13, 126, 0.3);
 }
 
+/* Disabled state */
 #start-multiplayer-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   background: #e0e5ec;
-  color: #636e72;
+  color: #666;
   box-shadow:
-    8px 8px 16px #bebebe,
-    -8px -8px 16px #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+    4px 4px 8px #bebebe,
+    -4px -4px 8px #ffffff;
 }
 
-#start-multiplayer-btn:disabled:hover {
-  transform: none;
-  box-shadow:
-    8px 8px 16px #bebebe,
-    -8px -8px 16px #ffffff;
+/* If you need to force it to be on a new row */
+.player-name-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 20px;
+  margin-top: 25px;
+  align-items: center;
 }
 
-/* Animation for enabled state */
-@keyframes pulseGlow {
-  0% {
-    box-shadow:
-      10px 10px 20px #bebebe,
-      -10px -10px 20px #ffffff,
-      0 0 30px rgba(108, 99, 255, 0.4);
-  }
-  50% {
-    box-shadow:
-      10px 10px 20px #bebebe,
-      -10px -10px 20px #ffffff,
-      0 0 50px rgba(108, 99, 255, 0.7);
-  }
-  100% {
-    box-shadow:
-      10px 10px 20px #bebebe,
-      -10px -10px 20px #ffffff,
-      0 0 30px rgba(108, 99, 255, 0.4);
-  }
+/* Make sure the button appears on its own row */
+.player-name-inputs::after {
+  content: "";
+  grid-column: 1 / -1;
+  height: 0;
 }
 
-#start-multiplayer-btn.enabled {
-  animation: pulseGlow 2s infinite;
-}
-
-/* ============================================
-   MULTIPLAYER PLAYERS CONTAINER - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Multiplayer Players Container */
 .players-container {
   display: flex;
   justify-content: space-between;
   gap: 25px;
   margin-bottom: 30px;
-  animation: slideIn 0.5s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .player-panel {
   flex: 1;
   padding: 25px;
   border-radius: 20px;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   box-shadow:
     8px 8px 16px #bebebe,
     -8px -8px 16px #ffffff,
@@ -336,13 +281,13 @@ body {
 }
 
 .player-panel.active {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   box-shadow:
     8px 8px 16px #bebebe,
     -8px -8px 16px #ffffff,
     inset 4px 4px 8px rgba(255, 255, 255, 0.8),
     inset -4px -4px 8px rgba(190, 190, 190, 0.2),
-    0 0 0 3px rgba(76, 175, 80, 0.3);
+    0 0 0 3px rgba(255, 215, 0, 0.3); /* Gold glow */
   transform: translateY(-5px);
 }
 
@@ -350,24 +295,23 @@ body {
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #2d3436;
+  color: #222; /* Very dark grey */
 }
 
 .player-score {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #2196F3;
+  color: #000d7e; /* Navy Blue */
   margin: 15px 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .player-turn-indicator {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #666;
+  color: #444; /* Dark grey */
   margin-top: 15px;
   padding: 8px 16px;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 20px;
   display: inline-block;
   box-shadow:
@@ -376,29 +320,31 @@ body {
 }
 
 .player-panel.active .player-turn-indicator {
-  background: #4CAF50;
-  color: white;
+  background: #ffd700; /* Gold */
+  color: #222; /* Very dark grey */
   animation: pulse 1.5s infinite;
-  box-shadow:
-    4px 4px 8px rgba(76, 175, 80, 0.3),
-    -4px -4px 8px rgba(255, 255, 255, 0.8);
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-/* Multiplayer option selections - UPDATED */
+/* Multiplayer option selections */
 .option.selected-player-1 {
-  border-color: #2196F3;
-  background: #e0e5ec;
-  position: relative;
+  border-color: #000d7e; /* Navy Blue */
+  background: #e0e5ec; /* Ash */
   box-shadow:
     inset 4px 4px 8px #bebebe,
     inset -4px -4px 8px #ffffff,
-    0 0 0 3px rgba(33, 150, 243, 0.3);
+    0 0 0 3px rgba(0, 13, 126, 0.3); /* Navy blue glow */
 }
 
 .option.selected-player-1::after {
@@ -406,25 +352,21 @@ body {
   position: absolute;
   top: -10px;
   right: 10px;
-  background: #2196F3;
-  color: white;
+  background: #000d7e; /* Navy Blue */
+  color: #f8f8f8; /* Light grey */
   padding: 6px 12px;
   border-radius: 15px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow:
-    3px 3px 6px rgba(0, 0, 0, 0.2),
-    -3px -3px 6px rgba(255, 255, 255, 0.8);
 }
 
 .option.selected-player-2 {
-  border-color: #FF9800;
-  background: #e0e5ec;
-  position: relative;
+  border-color: #ffd700; /* Gold */
+  background: #e0e5ec; /* Ash */
   box-shadow:
     inset 4px 4px 8px #bebebe,
     inset -4px -4px 8px #ffffff,
-    0 0 0 3px rgba(255, 152, 0, 0.3);
+    0 0 0 3px rgba(255, 215, 0, 0.3); /* Gold glow */
 }
 
 .option.selected-player-2::after {
@@ -432,22 +374,17 @@ body {
   position: absolute;
   top: -10px;
   right: 10px;
-  background: #FF9800;
-  color: white;
+  background: #ffd700; /* Gold */
+  color: #222; /* Very dark grey */
   padding: 6px 12px;
   border-radius: 15px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow:
-    3px 3px 6px rgba(0, 0, 0, 0.2),
-    -3px -3px 6px rgba(255, 255, 255, 0.8);
 }
 
-/* ============================================
-   PROGRESS & SCORE - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Progress & Score */
 .progress-container {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   padding: 20px;
   border-radius: 20px;
   margin: 25px 0;
@@ -458,8 +395,8 @@ body {
 }
 
 .score-display {
-  background: #e0e5ec;
-  color: #2d3436;
+  background: #e0e5ec; /* Ash */
+  color: #222; /* Very dark grey */
   padding: 12px 24px;
   border-radius: 50px;
   display: inline-block;
@@ -473,7 +410,7 @@ body {
 
 .progress-bar {
   height: 10px;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 5px;
   overflow: hidden;
   margin: 20px 0;
@@ -484,7 +421,7 @@ body {
 
 .progress {
   height: 100%;
-  background: linear-gradient(90deg, #09004d, #6c63ff);
+  background: linear-gradient(90deg, #000d7e, #00114d); /* Navy Blue gradient */
   width: 0%;
   transition: width 0.3s ease;
   border-radius: 5px;
@@ -493,16 +430,14 @@ body {
 .progress-text {
   display: flex;
   justify-content: space-between;
-  color: #636e72;
+  color: #444; /* Dark grey */
   font-size: 0.95rem;
   font-weight: 600;
 }
 
-/* ============================================
-   QUESTION - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Question */
 .question-container {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   padding: 25px;
   border-radius: 20px;
   margin: 25px 0;
@@ -515,7 +450,7 @@ body {
 }
 
 .question-number {
-  color: #000000;
+  color: #222; /* Very dark grey */
   font-weight: 700;
   margin-bottom: 12px;
   font-size: 1.1rem;
@@ -523,14 +458,12 @@ body {
 
 .question-text {
   font-size: 1.4rem;
-  color: #00020f;
+  color: #000d7e; /* Navy Blue */
   line-height: 1.5;
   font-weight: 600;
 }
 
-/* ============================================
-   OPTIONS - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Options */
 .options-container {
   display: grid;
   gap: 15px;
@@ -538,14 +471,14 @@ body {
 }
 
 .option {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border: none;
   border-radius: 15px;
   padding: 20px 25px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1.1rem;
-  color: #2d3436;
+  color: #222; /* Very dark grey */
   display: flex;
   align-items: center;
   gap: 20px;
@@ -566,41 +499,38 @@ body {
   box-shadow:
     inset 4px 4px 8px #bebebe,
     inset -4px -4px 8px #ffffff;
-  border: 2px solid #6c5ce7;
-  transform: translateY(0);
+  border: 2px solid #000d7e; /* Navy Blue */
 }
 
 .option.correct {
-  border-color: #00b894;
-  color: #00b894;
-  background: #e0e5ec;
+  border-color: #94ff94; /* Gold */
+  color: #222; /* Very dark grey */
+  background: rgba(255, 215, 0, 0.1); /* Gold with transparency */
 }
 
 .option.incorrect {
-  border-color: #d63031;
-  color: #d63031;
-  background: #e0e5ec;
+  border-color: #8b0000; /* Dark Red */
+  color: #222; /* Very dark grey */
+  background: rgba(139, 0, 0, 0.1); /* Dark red with transparency */
 }
 
 .option-letter {
   width: 40px;
   height: 40px;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #636e72;
+  color: #444; /* Dark grey */
   font-size: 1.1rem;
   box-shadow:
     4px 4px 8px #bebebe,
     -4px -4px 8px #ffffff;
 }
 
-/* ============================================
-   BUTTONS - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Buttons */
 .buttons-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -617,19 +547,17 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff;
-  color: #2d3436;
+  color: #222; /* Very dark grey */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   min-height: 60px;
   width: 100%;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn:hover {
@@ -647,31 +575,29 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #6c63ff 0%, #4a44c8 100%);
-  color: white;
+  background: linear-gradient(135deg, #000d7e 0%, #00114d 100%); /* Navy Blue */
+  color: #f8f8f8; /* Light grey */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff,
-    0 0 20px rgba(108, 99, 255, 0.3);
+    0 0 20px rgba(0, 13, 126, 0.3); /* Navy blue glow */
 }
 
 .btn-secondary {
-  background: #e0e5ec;
-  color: #2d3436;
+  background: #e0e5ec; /* Ash */
+  color: #222; /* Very dark grey */
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-  color: white;
+  background: linear-gradient(135deg, #ffd700 0%, #e6c300 100%); /* Gold */
+  color: #222; /* Very dark grey */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff,
-    0 0 20px rgba(0, 184, 148, 0.3);
+    0 0 20px rgba(255, 215, 0, 0.3); /* Gold glow */
 }
 
-/* ============================================
-   FEEDBACK - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Feedback */
 .feedback {
   margin: 20px 0;
   padding: 20px;
@@ -679,7 +605,7 @@ body {
   text-align: center;
   font-weight: 700;
   font-size: 1.2rem;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   box-shadow:
     inset 4px 4px 8px #bebebe,
     inset -4px -4px 8px #ffffff;
@@ -687,20 +613,18 @@ body {
 }
 
 .feedback.correct {
-  color: #00b894;
-  border-left: 5px solid #00b894;
+  color: #222; /* Very dark grey */
+  border-left: 5px solid #ffd700; /* Gold */
 }
 
 .feedback.incorrect {
-  color: #d63031;
-  border-left: 5px solid #d63031;
+  color: #222; /* Very dark grey */
+  border-left: 5px solid #8b0000; /* Dark Red */
 }
 
-/* ============================================
-   HIGH SCORES - UNIFORM NEUMORPHISM
-   ============================================ */
+/* High Scores */
 .high-scores-section {
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   padding: 25px;
   border-radius: 20px;
   margin: 25px 0;
@@ -715,7 +639,7 @@ body {
 .high-scores-section h3 {
   margin-top: 0;
   margin-bottom: 25px;
-  color: #2d3436;
+  color: #000d7e; /* Navy Blue */
   text-align: center;
   font-size: 1.5rem;
   display: flex;
@@ -725,17 +649,13 @@ body {
   font-weight: 800;
 }
 
-#high-scores-list {
-  min-height: 120px;
-}
-
 .score-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 25px;
   margin-bottom: 15px;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 15px;
   transition: all 0.3s ease;
   border: 1px solid transparent;
@@ -752,35 +672,35 @@ body {
 }
 
 .score-item:first-child {
-  border-color: #ffd700;
-  background: #e0e5ec;
+  border-color: #ffd700; /* Gold */
+  background: #e0e5ec; /* Ash */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff,
-    inset 0 0 20px rgba(255, 215, 0, 0.1);
+    inset 0 0 20px rgba(255, 215, 0, 0.1); /* Gold glow */
 }
 
 .score-item:nth-child(2) {
-  border-color: #c0c0c0;
-  background: #e0e5ec;
+  border-color: #999; /* Medium grey */
+  background: #e0e5ec; /* Ash */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff,
-    inset 0 0 20px rgba(192, 192, 192, 0.1);
+    inset 0 0 20px rgba(153, 153, 153, 0.1);
 }
 
 .score-item:nth-child(3) {
-  border-color: #cd7f32;
-  background: #e0e5ec;
+  border-color: #8b0000; /* Dark Red */
+  background: #e0e5ec; /* Ash */
   box-shadow:
     6px 6px 12px #bebebe,
     -6px -6px 12px #ffffff,
-    inset 0 0 20px rgba(205, 127, 50, 0.1);
+    inset 0 0 20px rgba(139, 0, 0, 0.1); /* Dark red glow */
 }
 
 .score-rank {
   font-weight: 800;
-  color: #6c5ce7;
+  color: #000d7e; /* Navy Blue */
   min-width: 40px;
   font-size: 1.2rem;
 }
@@ -789,13 +709,13 @@ body {
   flex-grow: 1;
   margin: 0 25px;
   font-weight: 700;
-  color: #2d3436;
+  color: #222; /* Very dark grey */
   font-size: 1.1rem;
 }
 
 .score-value {
   font-weight: 800;
-  color: #6c5ce7;
+  color: #000d7e; /* Navy Blue */
   font-size: 1.2rem;
   min-width: 70px;
   text-align: right;
@@ -804,10 +724,10 @@ body {
 .no-scores-message {
   text-align: center;
   padding: 40px 25px;
-  color: #636e72;
+  color: #444; /* Dark grey */
   font-style: italic;
   font-size: 1.1rem;
-  background: #e0e5ec;
+  background: #e0e5ec; /* Ash */
   border-radius: 15px;
   border: 2px dashed #bebebe;
   box-shadow:
@@ -815,9 +735,7 @@ body {
     inset -6px -6px 12px #ffffff;
 }
 
-/* ============================================
-   RESULTS - UNIFORM NEUMORPHISM
-   ============================================ */
+/* Results */
 .result-container {
   text-align: center;
   padding: 30px;
@@ -827,285 +745,135 @@ body {
 .result-score {
   font-size: 3rem;
   font-weight: 800;
-  color: #0b005a;
+  color: #000d7e; /* Navy Blue */
   margin: 20px 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
+/* Responsive */
 @media (max-width: 768px) {
   .quiz-container {
     padding: 25px;
     max-width: 95%;
-    border-radius: 20px;
   }
 
   .quiz-header h1 {
     font-size: 1.8rem;
   }
 
-  .header-top {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .high-score {
-    font-size: 1rem;
-    padding: 12px 20px;
-    justify-content: center;
-  }
-
-  .high-score span {
-    font-size: 1.1rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .game-mode-selector {
-    padding: 25px;
-    border-radius: 20px;
-    margin: 25px 0;
-  }
-  
   .mode-buttons {
     flex-direction: column;
-    gap: 15px;
   }
-  
-  .mode-btn {
-    padding: 18px;
-    font-size: 1rem;
-    min-height: 65px;
-  }
-  
+
   .player-name-inputs {
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-  
-  #start-multiplayer-btn {
-    padding: 20px;
-    font-size: 1.2rem;
-    min-height: 65px;
-  }
-
-  .question-text {
-    font-size: 1.2rem;
-  }
-
-  .option {
-    padding: 18px 20px;
-    font-size: 1rem;
-  }
-
-  .option-letter {
-    width: 35px;
-    height: 35px;
-    font-size: 1rem;
-  }
-
-  .buttons-container {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
-  }
-
-  .btn {
-    padding: 16px;
-    font-size: 1rem;
-    min-height: 55px;
   }
 
   .players-container {
     flex-direction: column;
-    gap: 20px;
   }
 
-  .player-panel {
-    padding: 20px;
-  }
-
-  .player-name-inputs {
-    grid-template-columns: 1fr 1fr;
+  .buttons-container {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 }
 
 @media (max-width: 480px) {
   .quiz-container {
     padding: 20px;
-    max-width: 100%;
-    border-radius: 15px;
   }
 
   .quiz-header h1 {
     font-size: 1.6rem;
   }
 
-  .high-score {
-    font-size: 0.95rem;
-    padding: 10px 16px;
-  }
-
-  .game-mode-selector {
-    padding: 20px;
-    border-radius: 18px;
-    margin: 20px 0;
-  }
-  
-  .mode-btn {
-    padding: 16px;
-    min-height: 60px;
-  }
-  
   .player-name-inputs {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .player-name-inputs input {
-    padding: 16px;
-    font-size: 1rem;
-  }
-  
-  #start-multiplayer-btn {
-    padding: 18px;
-    font-size: 1.1rem;
-    min-height: 60px;
-    margin-top: 20px;
-  }
-
-  .option {
-    padding: 16px 18px;
-    font-size: 0.95rem;
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .option-letter {
-    width: 30px;
-    height: 30px;
-    font-size: 0.9rem;
   }
 
   .buttons-container {
     grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .btn {
-    padding: 15px;
-    font-size: 0.95rem;
-    min-height: 50px;
-  }
-
-  .player-panel {
-    padding: 18px;
-  }
-
-  .player-score {
-    font-size: 1.8rem;
-  }
-
-  .result-score {
-    font-size: 2.2rem;
-  }
-
-  .score-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-    padding: 15px;
-  }
-
-  .score-name {
-    margin: 5px 0;
-    order: 2;
-  }
-
-  .score-rank {
-    order: 1;
-  }
-
-  .score-value {
-    order: 3;
-    text-align: center;
   }
 }
 
-/* ============================================
-   MODAL & REVIEW STYLES (Consistent with theme)
-   ============================================ */
-
-/* All modals and containers now use the same neumorphic pattern */
-.modal-overlay,
-.modal-content,
-.review-container,
-.review-summary,
-.summary-card,
-.review-questions,
-.review-question-item,
-.review-option {
-  background: #e0e5ec;
-  border-radius: 15px;
-  box-shadow:
-    6px 6px 12px #bebebe,
-    -6px -6px 12px #ffffff,
-    inset 4px 4px 8px rgba(255, 255, 255, 0.6),
-    inset -4px -4px 8px rgba(190, 190, 190, 0.2);
+/* Modal Colors */
+.modal-content {
+  background: #e0e5ec; /* Ash */
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Inputs in modals */
-.modal-content input,
-.review-container input {
-  background: #e0e5ec;
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  color: #2d3436;
-  box-shadow:
-    inset 4px 4px 8px #bebebe,
-    inset -4px -4px 8px #ffffff;
-  width: 100%;
+.modal-header h3 {
+  color: #000d7e; /* Navy Blue */
 }
 
-.modal-content input:focus,
-.review-container input:focus {
-  outline: none;
-  box-shadow:
-    inset 6px 6px 12px #bebebe,
-    inset -6px -6px 12px #ffffff,
-    0 0 0 2px rgba(108, 99, 255, 0.3);
+#modal-score,
+#modal-total {
+  color: #222; /* Very dark grey */
 }
 
-/* Buttons in modals and review */
-#save-score-btn,
-#skip-save-btn,
-.modal-actions button,
-.review-container .btn {
-  background: #e0e5ec;
-  border: none;
-  border-radius: 12px;
-  padding: 16px 24px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #2d3436;
-  box-shadow:
-    6px 6px 12px #bebebe,
-    -6px -6px 12px #ffffff;
+/* Review Colors */
+.review-question-number {
+  color: #000d7e; /* Navy Blue */
 }
 
-#save-score-btn:hover,
-#skip-save-btn:hover,
-.modal-actions button:hover,
-.review-container .btn:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    8px 8px 16px #bebebe,
-    -8px -
+.review-question-status.correct {
+  background: rgba(255, 215, 0, 0.1); /* Gold */
+  color: #222; /* Very dark grey */
+}
+
+.review-question-status.incorrect {
+  background: rgba(139, 0, 0, 0.1); /* Dark red */
+  color: #222; /* Very dark grey */
+}
+
+.review-option.correct-answer {
+  border-color: #ffd700; /* Gold */
+  background: rgba(255, 215, 0, 0.05); /* Gold with transparency */
+}
+
+.review-option.user-incorrect {
+  border-color: #8b0000; /* Dark red */
+  background: rgba(139, 0, 0, 0.05); /* Dark red with transparency */
+}
+
+.explanation-label {
+  color: #000d7e; /* Navy Blue */
+}
+
+/* Fix for any remaining gold text */
+.mode-btn.active .active-indicator {
+  color: #222; /* Very dark grey */
+}
+
+.player-panel.active .player-name {
+  color: #222; /* Very dark grey */
+}
+
+.option.correct .option-text {
+  color: #222; /* Very dark grey */
+}
+
+/* Animation fix for enabled state */
+@keyframes pulseGlow {
+  0% {
+    box-shadow:
+      10px 10px 20px #bebebe,
+      -10px -10px 20px #ffffff,
+      0 0 30px rgba(0, 13, 126, 0.4);
+  }
+  50% {
+    box-shadow:
+      10px 10px 20px #bebebe,
+      -10px -10px 20px #ffffff,
+      0 0 50px rgba(0, 13, 126, 0.7);
+  }
+  100% {
+    box-shadow:
+      10px 10px 20px #bebebe,
+      -10px -10px 20px #ffffff,
+      0 0 30px rgba(0, 13, 126, 0.4);
+  }
+}
+
+#start-multiplayer-btn.enabled {
+  animation: pulseGlow 2s infinite;
+}
